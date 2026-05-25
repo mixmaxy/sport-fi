@@ -1,6 +1,4 @@
-# Project Name: Sport Reservation Web Application (Sport-Fi)
-# Target Developer: Junior Front-End Web Developer
-# Architecture Style: Clean Architecture & Clean Code (Feature-Based Model)   
+# Sport Reservation Web Application
 
 ## Project Overview & Objectives
 Proyek ini adalah platform berbasis web yang memungkinkan pengguna untuk mencari, melihat, dan memesan fasilitas atau aktivitas olahraga secara online.
