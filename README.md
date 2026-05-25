@@ -1,28 +1,26 @@
-PRODUCT REQUIREMENT DOCUMENT (PRD)
+# Project Name: Sport Reservation Web Application (Sport-Fi)
+# Target Developer: Junior Front-End Web Developer
+# Architecture Style: Clean Architecture & Clean Code (Feature-Based Model)   
 
-Project Name: Sport Reservation Web Application (Sport-Fi)
-Target Developer: Junior Front-End Web Developer
-Architecture Style: Clean Architecture & Clean Code (Feature-Based Model)   
-
-1. Project Overview & Objectives
+## Project Overview & Objectives
 Proyek ini adalah platform berbasis web yang memungkinkan pengguna untuk mencari, melihat, dan memesan fasilitas atau aktivitas olahraga secara online.
 
-Objectives:
+### Objectives:
 - Membangun antarmuka (Front-End) interaktif menggunakan HTML, CSS, JavaScript, dan Tailwind CSS.
 - Mengimplementasikan framework React atau Next.js untuk performa dan skalabilitas yang optimal.
 - Mengintegrasikan fungsionalitas CRUD secara penuh menggunakan API yang telah disediakan.
 - Mengelola repositori kode menggunakan Git dengan dokumentasi yang rapi.
 - Melakukan deployment aplikasi agar dapat diakses secara publik.
 
-2. User Persona & Flow
+## User Persona & Flow
 - Guest (Belum Login): Dapat melihat Landing Page, menjelajahi kategori olahraga, mencari lokasi, dan melihat detail aktivitas olahraga.
 - Registered Customer (Sudah Login): Dapat melakukan pemesanan (transaksi), mengelola profil, melihat riwayat transaksi, mengunggah bukti pembayaran, dan membatalkan pesanan.
 - Admin (Optional/Role-based): Mengelola (CRUD) Kategori Olahraga dan Aktivitas Olahraga.
 
-3. Scope of Pages & Features (UI/UX Requirement)
+## Scope of Pages & Features (UI/UX Requirement)
 Sesuai panduan layout (Phone & Desktop layout), aplikasi ini wajib responsif:
 
-A. Core Pages
+### A. Core Pages
     Homepage / Landing Page:
         - Navbar: Navigasi, tombol Login/Register (jika belum login), atau Menu Profil (jika sudah login).
         - Hero Section: Banner utama dengan tombol Call-to-Action (CTA).
@@ -41,7 +39,7 @@ A. Core Pages
     Admin Dashboard (CRUD Management):
         - Halaman khusus untuk melakukan Create, Read, Update, Delete pada Sport Category dan Sport Activity.
 
-4. API Integration Mapping
+## API Integration Mapping
     Base URL: https://sport-reservation-api-bootcamp.do.dibimbing.id
     Endpoints Implementation:
         - Authentication: POST /login, POST /register, GET /me, POST /update-user, GET /logout.
@@ -52,10 +50,10 @@ A. Core Pages
         - Payment Method: GET /payment-methods.
         - Transaction: POST /create-transaction, GET /my-transaction, POST /update-proof-payment-url, POST /cancel-transaction.
 
-Feature-Based Model (Clean Architecture)
+## Project Structure
+
+```
 src/
-├── components/          # Global Reusable Components (Buttons, Input, Navbar, Footer)
-├── config/              # Axios instance, API base URL configuration
 ├── features/            # Pembagian berdasarkan Fitur Utama
 │   ├── auth/
 │   │   ├── components/  # LoginForm, RegisterForm
@@ -80,11 +78,26 @@ src/
 │   ├── layout.tsx
 │   ├── page.tsx
 │   └── globals.css
+├── shared/              
+│   ├── components/      # Global Reusable Components (Buttons, Input, Navbar, Footer)
+│   ├── config/          # API configuration, axios instance, etc
+│   ├── hooks/           # Custom hooks
+│   ├── types/           # Type definitions (interface & type)
+│   └── utils/           # Helper functions (format currency, date, etc.)
+├── store/               # Global state (Zustand)
+│   ├── useAuthStore.ts  # Authentication state
+│   └── useCartStore.ts  # Cart state
+```
 
-
-Tech Stack:
-    Core: Next.js 16, TypeScript, Tailwind CSS, Shadcn UI (optional)
-    Zustand for Global State Management
-    TanStack Query & Axios for State Management and Data Fetching
-    React Hook Form & Zod for Form Handling
-    Lucide React for Icons
+## Tech Stack
+===
+- Next.js 16 (App Router)
+- TypeScript 5
+- Tailwind CSS 4
+- Shadcn/UI - UI Component Library
+- Zustand - Global State Management
+- TanStack Query v5 - Server State Management
+- React Hook Form - Form Handling
+- Zod - Form Validation
+- Lucide React - Icon
+- Axios - API Integration
