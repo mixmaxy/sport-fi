@@ -1,14 +1,42 @@
-'use client';
+"use client";
 
-import React, { useState } from 'react';
-import Link from 'next/link';
-import { usePathname } from 'next/navigation';
-import { Menu, X, ShoppingCart, User, LogOut, LayoutDashboard, Shield } from 'lucide-react';
-import { useAuthStore } from '@/store/useAuthStore';
-import { useCartStore } from '@/store/useCartStore';
-import { useLogout } from '@/features/auth/services/authApi';
-import { Button } from '../ui/Button';
-import { cn } from '@/shared/lib/utils';
+import { useState } from "react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import {
+  Menu,
+  X,
+  ShoppingCart,
+  LogOut,
+  LayoutDashboard,
+  Shield,
+} from "lucide-react";
+import { useAuthStore } from "@/store/useAuthStore";
+import { useCartStore } from "@/store/useCartStore";
+import { useLogout } from "@/features/auth/hooks/useAuthMutations";
+import { Button } from "../ui/Button";
+import { cn } from "@/shared/utils/cn";
+import { toast } from "sonner";
+
+const navLinks = [
+  { href: "/", label: "Home", match: (path: string) => path === "/" },
+  {
+    href: "/activities",
+    label: "Venues",
+    match: (path: string) =>
+      path === "/activities" || path.startsWith("/activities/"),
+  },
+  {
+    href: "/dashboard",
+    label: "My Bookings",
+    match: (path: string) => path.startsWith("/dashboard"),
+  },
+  {
+    href: "/me",
+    label: "Profil",
+    match: (path: string) => path === "/me",
+  },
+];
 
 export const Navbar = () => {
   const pathname = usePathname();
@@ -17,210 +45,213 @@ export const Navbar = () => {
   const { mutate: logout } = useLogout();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
-  const isActive = (path: string) => pathname === path;
-
-  const navLinks = [
-    { href: '/', label: 'Beranda' },
-    { href: '/activities', label: 'Aktivitas' },
-    { href: '/categories', label: 'Kategori' },
-  ];
-
   const handleLogout = () => {
-    logout();
+    logout({
+      onSuccess: () => {
+        toast.success("Berhasil keluar. Sampai jumpa!");
+      },
+      onError: () => {
+        toast.error("Gagal logout dari server, sesi lokal telah dihapus.");
+      },
+    });
     setIsMobileMenuOpen(false);
   };
 
+  const closeMobile = () => setIsMobileMenuOpen(false);
+
   return (
-    <nav
-      className="sticky top-0 z-50 bg-white border-b border-gray-200 shadow-sm"
-      role="navigation"
-      aria-label="Main navigation"
+    <header
+      className="sticky top-0 z-50 border-b border-outline-variant bg-background/90 shadow-sm backdrop-blur-md"
+      role="banner"
     >
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16">
-          {/* Logo */}
+      <div className="mx-auto flex h-20 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-10">
+        <Link
+          href="/"
+          className="text-xl font-extrabold tracking-tight text-primary transition-colors hover:text-primary/90"
+        >
+          Sport Reserve
+        </Link>
+
+        <nav
+          className="hidden items-center gap-8 md:flex"
+          aria-label="Main navigation"
+        >
+          {navLinks.map((link) => {
+            const active = link.match(pathname);
+            return (
+              <Link
+                key={link.href}
+                href={link.href}
+                className={cn(
+                  "text-sm font-semibold tracking-wide transition-colors duration-200",
+                  active
+                    ? "border-b-2 border-primary pb-1 text-primary"
+                    : "text-on-surface-variant hover:text-primary",
+                )}
+              >
+                {link.label}
+              </Link>
+            );
+          })}
+        </nav>
+
+        <div className="hidden items-center gap-3 md:flex">
           <Link
-            href="/"
-            className="flex items-center gap-2 text-xl font-bold text-blue-600 hover:text-blue-700 transition-colors"
+            href="/cart"
+            className="relative rounded-lg p-2 text-on-surface-variant transition-colors hover:bg-surface-container-low hover:text-primary"
+            aria-label={`Keranjang, ${totalItems} item`}
           >
-            <span className="text-2xl" aria-hidden="true">🏃</span>
-            <h1 className="text-xl font-bold">SportReserve</h1>
+            <ShoppingCart className="h-6 w-6" />
+            {totalItems > 0 && (
+              <span className="absolute -top-0.5 -right-0.5 flex h-5 w-5 items-center justify-center rounded-full bg-primary text-[10px] font-bold text-on-primary">
+                {totalItems}
+              </span>
+            )}
           </Link>
 
-          {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center gap-6">
-            {navLinks.map((link) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                className={cn(
-                  'text-sm font-medium transition-colors',
-                  isActive(link.href)
-                    ? 'text-blue-600'
-                    : 'text-gray-700 hover:text-blue-600'
-                )}
-              >
-                {link.label}
-              </Link>
-            ))}
-          </div>
-
-          {/* Desktop Actions */}
-          <div className="hidden md:flex items-center gap-4">
-            {/* Cart */}
-            <Link
-              href="/cart"
-              className="relative p-2 text-gray-700 hover:text-blue-600 transition-colors"
-              aria-label={`Shopping cart with ${totalItems} items`}
-            >
-              <ShoppingCart className="w-6 h-6" />
-              {totalItems > 0 && (
-                <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
-                  {totalItems}
-                </span>
+          {isAuthenticated ? (
+            <>
+              {user?.role === "admin" && (
+                <Link href="/admin">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="border-outline-variant text-on-surface hover:border-primary hover:bg-surface-container-low"
+                  >
+                    Admin
+                  </Button>
+                </Link>
               )}
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={handleLogout}
+                className="text-on-surface-variant hover:bg-surface-container-low hover:text-primary"
+                leftIcon={<LogOut className="h-4 w-4" />}
+              >
+                Keluar
+              </Button>
+            </>
+          ) : (
+            <Link href="/login">
+              <Button
+                size="sm"
+                className="rounded-lg bg-primary px-6 font-bold shadow-md hover:brightness-110 active:scale-95"
+              >
+                Login
+              </Button>
             </Link>
-
-            {/* Auth Actions */}
-            {isAuthenticated ? (
-              <div className="flex items-center gap-3">
-                {user?.role === 'admin' && (
-                  <Link href="/admin">
-                    <Button variant="outline" size="sm" className="border-blue-650 text-blue-650 hover:bg-blue-50/50">
-                      Admin Panel
-                    </Button>
-                  </Link>
-                )}
-                <Link href="/dashboard">
-                  <Button variant="outline" size="sm" leftIcon={<LayoutDashboard className="w-4 h-4" />}>
-                    Dashboard
-                  </Button>
-                </Link>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={handleLogout}
-                  leftIcon={<LogOut className="w-4 h-4" />}
-                >
-                  Keluar
-                </Button>
-              </div>
-            ) : (
-              <div className="flex items-center gap-3">
-                <Link href="/login">
-                  <Button variant="outline" size="sm">
-                    Masuk
-                  </Button>
-                </Link>
-                <Link href="/register">
-                  <Button size="sm">
-                    Daftar
-                  </Button>
-                </Link>
-              </div>
-            )}
-          </div>
-
-          {/* Mobile Menu Button */}
-          <button
-            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            className="md:hidden p-2 text-gray-700 hover:text-blue-600 transition-colors"
-            aria-label="Toggle mobile menu"
-            aria-expanded={isMobileMenuOpen}
-          >
-            {isMobileMenuOpen ? (
-              <X className="w-6 h-6" />
-            ) : (
-              <Menu className="w-6 h-6" />
-            )}
-          </button>
+          )}
         </div>
+
+        <button
+          type="button"
+          onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+          className="rounded-lg p-2 text-on-surface-variant transition-colors hover:bg-surface-container-low md:hidden"
+          aria-label="Toggle menu"
+          aria-expanded={isMobileMenuOpen}
+        >
+          {isMobileMenuOpen ? (
+            <X className="h-6 w-6" />
+          ) : (
+            <Menu className="h-6 w-6" />
+          )}
+        </button>
       </div>
 
-      {/* Mobile Menu */}
       {isMobileMenuOpen && (
-        <div className="md:hidden border-t border-gray-200 bg-white">
-          <div className="px-4 py-4 space-y-3">
-            {/* Navigation Links */}
-            {navLinks.map((link) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                onClick={() => setIsMobileMenuOpen(false)}
-                className={cn(
-                  'block px-3 py-2 rounded-lg text-base font-medium transition-colors',
-                  isActive(link.href)
-                    ? 'bg-blue-50 text-blue-600'
-                    : 'text-gray-700 hover:bg-gray-50'
-                )}
-              >
-                {link.label}
-              </Link>
-            ))}
+        <div className="border-t border-outline-variant bg-background/95 backdrop-blur-md md:hidden">
+          <div className="space-y-1 px-4 py-4">
+            {navLinks.map((link) => {
+              const active = link.match(pathname);
+              return (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  onClick={closeMobile}
+                  className={cn(
+                    "block rounded-lg px-3 py-2.5 text-base font-semibold transition-colors",
+                    active
+                      ? "bg-surface-container-low text-primary"
+                      : "text-on-surface-variant hover:bg-surface-container-low",
+                  )}
+                >
+                  {link.label}
+                </Link>
+              );
+            })}
 
-            {/* Cart */}
+            <Link
+              href="/categories"
+              onClick={closeMobile}
+              className="block rounded-lg px-3 py-2.5 text-base font-medium text-on-surface-variant hover:bg-surface-container-low"
+            >
+              Categories
+            </Link>
+
             <Link
               href="/cart"
-              onClick={() => setIsMobileMenuOpen(false)}
-              className="flex items-center justify-between px-3 py-2 rounded-lg text-base font-medium text-gray-700 hover:bg-gray-50"
+              onClick={closeMobile}
+              className="flex items-center justify-between rounded-lg px-3 py-2.5 text-base font-medium text-on-surface-variant hover:bg-surface-container-low"
             >
               <span className="flex items-center gap-2">
-                <ShoppingCart className="w-5 h-5" />
+                <ShoppingCart className="h-5 w-5" />
                 Keranjang
               </span>
               {totalItems > 0 && (
-                <span className="bg-red-500 text-white text-xs font-bold rounded-full px-2 py-0.5">
+                <span className="rounded-full bg-primary px-2 py-0.5 text-xs font-bold text-on-primary">
                   {totalItems}
                 </span>
               )}
             </Link>
 
-            {/* Auth Actions */}
             {isAuthenticated ? (
               <>
-                {user?.role === 'admin' && (
+                {user?.role === "admin" && (
                   <Link
                     href="/admin"
-                    onClick={() => setIsMobileMenuOpen(false)}
-                    className="flex items-center gap-2 px-3 py-2 rounded-lg text-base font-medium text-blue-600 hover:bg-blue-50"
+                    onClick={closeMobile}
+                    className="flex items-center gap-2 rounded-lg px-3 py-2.5 font-medium text-primary hover:bg-surface-container-low"
                   >
-                    <Shield className="w-5 h-5" />
+                    <Shield className="h-5 w-5" />
                     Admin Panel
                   </Link>
                 )}
                 <Link
                   href="/dashboard"
-                  onClick={() => setIsMobileMenuOpen(false)}
-                  className="flex items-center gap-2 px-3 py-2 rounded-lg text-base font-medium text-gray-700 hover:bg-gray-50"
+                  onClick={closeMobile}
+                  className="flex items-center gap-2 rounded-lg px-3 py-2.5 font-medium text-on-surface-variant hover:bg-surface-container-low"
                 >
-                  <LayoutDashboard className="w-5 h-5" />
+                  <LayoutDashboard className="h-5 w-5" />
                   Dashboard
                 </Link>
                 <button
+                  type="button"
                   onClick={handleLogout}
-                  className="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-base font-medium text-red-600 hover:bg-red-50"
+                  className="flex w-full items-center gap-2 rounded-lg px-3 py-2.5 font-medium text-red-600 hover:bg-red-50"
                 >
-                  <LogOut className="w-5 h-5" />
+                  <LogOut className="h-5 w-5" />
                   Keluar
                 </button>
               </>
             ) : (
-              <div className="flex gap-3 pt-3 border-t border-gray-200">
-                <Link
-                  href="/auth/login"
-                  onClick={() => setIsMobileMenuOpen(false)}
-                  className="flex-1"
-                >
-                  <Button variant="outline" size="sm" fullWidth>
-                    Masuk
+              <div className="flex gap-3 border-t border-outline-variant pt-4">
+                <Link href="/login" onClick={closeMobile} className="flex-1">
+                  <Button
+                    fullWidth
+                    size="sm"
+                    className="bg-primary font-bold hover:brightness-110"
+                  >
+                    Login
                   </Button>
                 </Link>
-                <Link
-                  href="/auth/register"
-                  onClick={() => setIsMobileMenuOpen(false)}
-                  className="flex-1"
-                >
-                  <Button size="sm" fullWidth>
+                <Link href="/register" onClick={closeMobile} className="flex-1">
+                  <Button
+                    fullWidth
+                    variant="outline"
+                    size="sm"
+                    className="border-outline-variant"
+                  >
                     Daftar
                   </Button>
                 </Link>
@@ -229,6 +260,6 @@ export const Navbar = () => {
           </div>
         </div>
       )}
-    </nav>
+    </header>
   );
 };

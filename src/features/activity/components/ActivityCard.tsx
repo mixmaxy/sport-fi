@@ -1,27 +1,72 @@
-'use client';
+"use client";
 
-import React from 'react';
-import Image from 'next/image';
-import Link from 'next/link';
-import { MapPin, Star, ShoppingCart } from 'lucide-react';
-import type { SportActivity } from '@/shared/types';
-import { Button } from '@/shared/components/ui/Button';
-import { Card, CardBody } from '@/shared/components/ui/Card';
-import { formatCurrency, calculateDiscountPercentage } from '@/shared/lib/helpers';
-import { useCartStore } from '@/store/useCartStore';
-import { toast } from 'sonner';
+import Image from "next/image";
+import Link from "next/link";
+import {
+  MapPin,
+  Star,
+  ShoppingCart,
+  Car,
+  Droplets,
+  UtensilsCrossed,
+  Lock,
+  Wifi,
+  Dumbbell,
+} from "lucide-react";
+import type { SportActivity } from "@/shared/types";
+import { Button } from "@/shared/components/ui/Button";
+import {
+  formatCurrency,
+  calculateDiscountPercentage,
+} from "@/shared/utils/helper";
+import { getActivityImageUrl } from "@/shared/utils/images";
+import { useCartStore } from "@/store/useCartStore";
+import { toast } from "sonner";
 
 interface ActivityCardProps {
   activity: SportActivity;
-  priority?: boolean; // Prioritize image loading (LCP optimization)
+  priority?: boolean;
 }
 
-export const ActivityCard = ({ activity, priority = false }: ActivityCardProps) => {
+function getFacilityIcons(facilities?: string) {
+  if (!facilities) return [];
+  const text = facilities.toLowerCase();
+  const icons = [];
+  if (text.includes("parkir") || text.includes("parking"))
+    icons.push({ Icon: Car, label: "Parking" });
+  if (text.includes("shower") || text.includes("mandi"))
+    icons.push({ Icon: Droplets, label: "Shower" });
+  if (text.includes("locker") || text.includes("loker"))
+    icons.push({ Icon: Lock, label: "Locker" });
+  if (
+    text.includes("kantin") ||
+    text.includes("cafe") ||
+    text.includes("minum")
+  )
+    icons.push({ Icon: UtensilsCrossed, label: "Cafe" });
+  if (text.includes("wifi")) icons.push({ Icon: Wifi, label: "WiFi" });
+  if (text.includes("gym") || text.includes("fitness"))
+    icons.push({ Icon: Dumbbell, label: "Gym" });
+  return icons.slice(0, 4);
+}
+
+export function ActivityCard({
+  activity,
+  priority = false,
+}: ActivityCardProps) {
   const { addItem, getItemQuantity } = useCartStore();
   const inCartQty = getItemQuantity(activity.id);
-  const discount = calculateDiscountPercentage(activity.price, activity.priceDiscount);
-  const finalPrice = activity.priceDiscount > 0 ? activity.priceDiscount : activity.price;
-  const imageUrl = activity.imageUrls?.[0] || '/placeholder.jpg';
+  const discount = calculateDiscountPercentage(
+    activity.price,
+    activity.priceDiscount ?? 0,
+  );
+  const finalPrice =
+    (activity.priceDiscount ?? 0) > 0
+      ? (activity.priceDiscount ?? activity.price)
+      : activity.price;
+  const imageUrl = getActivityImageUrl(activity.imageUrls);
+  const facilityIcons = getFacilityIcons(activity.facilities);
+  const categoryLabel = activity.category?.name ?? "Sport";
 
   const handleAddToCart = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -31,96 +76,113 @@ export const ActivityCard = ({ activity, priority = false }: ActivityCardProps) 
   };
 
   return (
-    <Link href={`/activities/${activity.id}`} className="group block h-full">
-      <Card hoverable className="h-full flex flex-col overflow-hidden bg-white border border-gray-150 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg rounded-xl">
-        <CardBody className="p-0 flex flex-col h-full">
-          {/* Image & Badges */}
-          <div className="relative aspect-video w-full overflow-hidden bg-gray-100">
-            <Image
-              src={imageUrl}
-              alt={activity.title}
-              fill
-              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-              className="object-cover transition-transform duration-500 group-hover:scale-105"
-              priority={priority}
-            />
-            {/* Category Badge */}
-            {activity.category?.name && (
-              <span className="absolute top-3 left-3 bg-blue-600/90 backdrop-blur-xs text-white text-xs font-semibold px-2.5 py-1 rounded-full shadow-sm">
-                {activity.category.name}
+    <article className="group flex flex-col overflow-hidden rounded-xl border border-outline-variant bg-surface-container-lowest shadow-[0_4px_6px_-1px_rgba(15,23,42,0.1)] transition-all hover:shadow-[0_10px_15px_-3px_rgba(15,23,42,0.15)]">
+      <Link
+        href={`/activities/${activity.id}`}
+        className="relative block h-56 overflow-hidden"
+      >
+        <Image
+          src={imageUrl}
+          alt={activity.title}
+          fill
+          sizes="(max-width: 768px) 100vw, 50vw"
+          className="object-cover transition-transform duration-500 group-hover:scale-105"
+          priority={priority}
+          unoptimized={imageUrl.endsWith(".svg")}
+        />
+        <span className="absolute top-4 left-4 rounded-lg bg-primary px-3 py-1 text-xs font-semibold text-on-primary">
+          {categoryLabel}
+        </span>
+        {discount > 0 && (
+          <span className="absolute top-4 right-4 rounded-lg bg-tertiary px-3 py-1 text-xs font-bold text-on-primary">
+            -{discount}%
+          </span>
+        )}
+        {inCartQty > 0 && (
+          <span className="absolute bottom-4 right-4 flex items-center gap-1 rounded-lg bg-green-600 px-2 py-1 text-xs font-bold text-white">
+            <ShoppingCart className="h-3 w-3" />
+            {inCartQty}
+          </span>
+        )}
+      </Link>
+
+      <div className="flex flex-1 flex-col p-5">
+        <div className="mb-2 flex items-start justify-between gap-2">
+          <Link
+            href={`/activities/${activity.id}`}
+            className="text-lg font-bold text-on-surface transition-colors hover:text-primary line-clamp-2"
+          >
+            {activity.title}
+          </Link>
+          <div className="flex shrink-0 items-center gap-1 text-tertiary">
+            <Star className="h-4 w-4 fill-tertiary text-tertiary" aria-hidden />
+            <span className="font-bold text-on-surface">
+              {(activity.rating ?? 0).toFixed(1)}
+            </span>
+            <span className="text-xs text-on-surface-variant">
+              ({activity.totalReviews ?? 0})
+            </span>
+          </div>
+        </div>
+
+        <p className="mb-4 flex items-center gap-1 text-sm text-on-surface-variant">
+          <MapPin className="h-4 w-4 shrink-0" aria-hidden />
+          <span className="line-clamp-2">
+            {activity.address ||
+              `${activity.city?.name ?? activity.cityId}, ${activity.province?.name ?? activity.provinceId}`}
+          </span>
+        </p>
+
+        {facilityIcons.length > 0 && (
+          <div className="mb-6 flex items-center gap-2">
+            {facilityIcons.map(({ Icon, label }) => (
+              <Icon
+                key={label}
+                className="h-[18px] w-[18px] text-primary"
+                aria-label={label}
+              />
+            ))}
+          </div>
+        )}
+
+        <div className="mt-auto flex items-center justify-between gap-3 border-t border-outline-variant pt-4">
+          <div>
+            <span className="text-xs text-on-surface-variant">Starts from</span>
+            <div className="text-xl font-bold text-primary">
+              {formatCurrency(finalPrice)}
+              <span className="text-sm font-medium text-on-surface-variant">
+                /sesi
               </span>
-            )}
-            {/* Discount Badge */}
+            </div>
             {discount > 0 && (
-              <span className="absolute top-3 right-3 bg-red-500 text-white text-xs font-bold px-2.5 py-1 rounded-md shadow-sm animate-pulse">
-                Hemat {discount}%
-              </span>
-            )}
-            {inCartQty > 0 && (
-              <span className="absolute top-3 left-3 bg-green-500 text-white text-xs font-bold px-2.5 py-1 rounded-full flex items-center gap-1">
-                <ShoppingCart className="w-3 h-3" />
-                {inCartQty} di keranjang
+              <span className="text-xs text-on-surface-variant line-through">
+                {formatCurrency(activity.price)}
               </span>
             )}
           </div>
-
-          {/* Content */}
-          <div className="p-5 flex flex-col flex-1">
-            {/* Title */}
-            <h3 className="font-bold text-gray-900 text-lg mb-2 line-clamp-2 group-hover:text-blue-600 transition-colors duration-200">
-              {activity.title}
-            </h3>
-
-            {/* Location & Address */}
-            <div className="flex items-start gap-1.5 text-sm text-gray-500 mb-3">
-              <MapPin className="w-4 h-4 text-gray-400 mt-0.5 flex-shrink-0" />
-              <span className="line-clamp-1">
-                {activity.city?.name ?? activity.cityId}, {activity.province?.name ?? activity.provinceId}
-              </span>
-            </div>
-
-            {/* Rating & Reviews */}
-            <div className="flex items-center gap-2 mb-4">
-              <div className="flex items-center gap-0.5 text-yellow-500">
-                <Star className="w-4 h-4 fill-yellow-500 stroke-yellow-500" />
-                <span className="font-semibold text-gray-800 text-sm">
-                  {activity.rating ? activity.rating.toFixed(1) : '5.0'}
-                </span>
-              </div>
-              <span className="text-xs text-gray-400">
-                ({activity.totalReviews ?? 0} ulasan)
-              </span>
-            </div>
-
-            {/* Price and CTA at Bottom */}
-            <div className="mt-auto pt-4 border-t border-gray-100 flex items-center justify-between gap-4">
-              <div className="flex flex-col">
-                {discount > 0 && (
-                  <span className="text-xs text-gray-400 line-through">
-                    {formatCurrency(activity.price)}
-                  </span>
-                )}
-                <span className="text-lg font-bold text-blue-600">
-                  {formatCurrency(finalPrice)}
-                </span>
-              </div>
-
-              {/* Add to Cart Quick CTA */}
+          <div className="flex items-center gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              className="rounded-lg border-outline-variant p-2 hover:border-primary hover:bg-surface-container-low"
+              onClick={handleAddToCart}
+              aria-label="Tambah ke keranjang"
+            >
+              <ShoppingCart className="h-4 w-4 text-primary" />
+            </Button>
+            <Link href={`/activities/${activity.id}`}>
               <Button
-                variant="outline"
                 size="sm"
-                className="rounded-lg p-2 border-blue-200 hover:border-blue-600 hover:bg-blue-50"
-                onClick={handleAddToCart}
-                aria-label="Add to cart"
+                className="rounded-lg bg-primary px-6 py-3 font-bold hover:brightness-110"
               >
-                <ShoppingCart className="w-4 h-4 text-blue-600" />
+                View Detail
               </Button>
-            </div>
+            </Link>
           </div>
-        </CardBody>
-      </Card>
-    </Link>
+        </div>
+      </div>
+    </article>
   );
-};
+}
 
 export default ActivityCard;

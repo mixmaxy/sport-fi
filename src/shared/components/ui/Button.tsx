@@ -1,5 +1,5 @@
 import React from 'react';
-import { cn } from '@/lib/utils';
+import { cn } from '@/shared/utils/cn';
 
 /**
  * Button Component
@@ -39,10 +39,10 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     ) => {
         // Variant styles
         const variants = {
-            primary: 'bg-blue-600 text-white hover:bg-blue-700 active:bg-blue-800 focus-visible:ring-blue-500',
-            secondary: 'bg-gray-600 text-white hover:bg-gray-700 active:bg-gray-800 focus-visible:ring-gray-500',
-            outline: 'border-2 border-blue-600 text-blue-600 hover:bg-blue-50 active:bg-blue-100 focus-visible:ring-blue-500',
-            ghost: 'text-gray-700 hover:bg-gray-100 active:bg-gray-200 focus-visible:ring-gray-500',
+            primary: 'bg-primary text-on-primary hover:brightness-110 active:scale-[0.98] focus-visible:ring-primary shadow-md',
+            secondary: 'bg-on-surface-variant text-on-primary hover:brightness-110 focus-visible:ring-on-surface-variant',
+            outline: 'border-2 border-primary text-primary hover:bg-surface-container-low active:bg-surface-container focus-visible:ring-primary',
+            ghost: 'text-on-surface-variant hover:bg-surface-container-low active:bg-surface-container focus-visible:ring-primary',
             danger: 'bg-red-600 text-white hover:bg-red-700 active:bg-red-800 focus-visible:ring-red-500',
         };
 
