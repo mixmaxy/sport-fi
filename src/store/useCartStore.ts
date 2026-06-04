@@ -2,16 +2,6 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import type { CartItem, SportActivity } from '@/shared/types';
 
-/**
- * Cart Store using Zustand with Persist
- * 
- * Why:
- * - Manages shopping cart state globally
- * - Persists cart across page refreshes
- * - Provides helper methods for cart operations
- * - Type-safe with TypeScript
- */
-
 interface CartState {
     // State
     items: CartItem[];

@@ -1,5 +1,5 @@
 import React from 'react';
-import { cn } from '@/shared/lib/utils';
+import { cn } from '@/shared/utils/cn';
 
 /**
  * Card Component
@@ -22,8 +22,8 @@ export const Card = React.forwardRef<HTMLDivElement, CardProps>(
             <Component
                 ref={ref}
                 className={cn(
-                    'bg-white rounded-lg border border-gray-200 shadow-sm',
-                    hoverable && 'transition-shadow hover:shadow-md cursor-pointer',
+                    'bg-surface-container-lowest rounded-xl border border-outline-variant shadow-sm',
+                    hoverable && 'transition-all hover:shadow-md cursor-pointer',
                     className
                 )}
                 {...props}
