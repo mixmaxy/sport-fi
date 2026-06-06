@@ -31,7 +31,7 @@ async function postMultipart(url: string, file: File, fieldName = "file") {
   const { data } = await api.post(url, formData, {
     headers: {
       Accept: "application/json",
-      // Biarkan axios set boundary multipart; jangan pakai application/json.
+      // biarin axios set boundary multipart, jangan pakai application/json.
       "Content-Type": undefined,
     },
   });

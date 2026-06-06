@@ -19,7 +19,10 @@ import {
   formatCurrency,
   calculateDiscountPercentage,
 } from "@/shared/utils/helper";
-import { getActivityImageUrl } from "@/shared/utils/images";
+import {
+  getActivityImageUrl,
+  isLocalPlaceholderImage,
+} from "@/shared/utils/images";
 import { useCartStore } from "@/store/useCartStore";
 import { toast } from "sonner";
 
@@ -88,7 +91,7 @@ export function ActivityCard({
           sizes="(max-width: 768px) 100vw, 50vw"
           className="object-cover transition-transform duration-500 group-hover:scale-105"
           priority={priority}
-          unoptimized={imageUrl.endsWith(".svg")}
+          unoptimized={isLocalPlaceholderImage(imageUrl)}
         />
         <span className="absolute top-4 left-4 rounded-lg bg-primary px-3 py-1 text-xs font-semibold text-on-primary">
           {categoryLabel}

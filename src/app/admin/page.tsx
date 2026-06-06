@@ -36,7 +36,11 @@ import { Button } from "@/shared/components/ui/Button";
 import { Input } from "@/shared/components/ui/Input";
 import { Card } from "@/shared/components/ui/Card";
 import { formatCurrency } from "@/shared/utils/helper";
-import { getActivityImageUrl } from "@/shared/utils/images";
+import {
+  getActivityImageUrl,
+  getCategoryImageUrl,
+  isLocalPlaceholderImage,
+} from "@/shared/utils/images";
 import { toast } from "sonner";
 import { SportActivity } from "@/shared/types";
 
@@ -257,10 +261,13 @@ const CategoriesManagement = () => {
             >
               <div className="relative aspect-video bg-gray-100">
                 <Image
-                  src={cat.imageUrl}
+                  src={getCategoryImageUrl(cat.imageUrl)}
                   alt={cat.name}
                   fill
                   className="object-cover"
+                  unoptimized={isLocalPlaceholderImage(
+                    getCategoryImageUrl(cat.imageUrl),
+                  )}
                 />
               </div>
               <div className="p-4 flex-1 flex flex-col justify-between">
@@ -606,7 +613,9 @@ const ActivitiesManagement = () => {
                           alt={act.title}
                           fill
                           className="object-cover"
-                          unoptimized={!act.imageUrls?.[0]}
+                          unoptimized={isLocalPlaceholderImage(
+                            getActivityImageUrl(act.imageUrls),
+                          )}
                         />
                       </div>
                       <span className="font-semibold text-gray-900 truncate max-w-[200px]">

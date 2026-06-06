@@ -15,7 +15,10 @@ import { useAuthStore } from "@/store/useAuthStore";
 import { Button } from "@/shared/components/ui/Button";
 import { PageShell } from "@/shared/components/layout/PageShell";
 import { formatCurrency } from "@/shared/utils/helper";
-import { getActivityImageUrl } from "@/shared/utils/images";
+import {
+  getActivityImageUrl,
+  isLocalPlaceholderImage,
+} from "@/shared/utils/images";
 
 export default function CartPage() {
   const { items, removeItem, updateQuantity, clearCart, totalPrice } =
@@ -83,6 +86,9 @@ export default function CartPage() {
                       alt={activity.title}
                       fill
                       className="object-cover"
+                      unoptimized={isLocalPlaceholderImage(
+                        getActivityImageUrl(activity.imageUrls),
+                      )}
                     />
                   </div>
 
