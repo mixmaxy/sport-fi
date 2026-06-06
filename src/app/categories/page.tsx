@@ -2,6 +2,10 @@ import Link from "next/link";
 import Image from "next/image";
 import { fetchCategories } from "@/features/category/lib/categories.server";
 import { PageShell } from "@/shared/components/layout/PageShell";
+import {
+  getCategoryImageUrl,
+  isLocalPlaceholderImage,
+} from "@/shared/utils/images";
 
 export const revalidate = 300;
 
@@ -28,14 +32,15 @@ export default async function CategoriesPage() {
           >
             <div className="overflow-hidden rounded-xl border border-outline-variant bg-surface-container-lowest shadow-sm transition-shadow hover:shadow-md">
               <div className="relative h-36 overflow-hidden bg-surface-container-low">
-                {cat.imageUrl && (
-                  <Image
-                    src={cat.imageUrl}
-                    alt={cat.name}
-                    fill
-                    className="object-cover transition-transform duration-300 group-hover:scale-110"
-                  />
-                )}
+                <Image
+                  src={getCategoryImageUrl(cat.imageUrl)}
+                  alt={cat.name}
+                  fill
+                  className="object-cover transition-transform duration-300 group-hover:scale-110"
+                  unoptimized={isLocalPlaceholderImage(
+                    getCategoryImageUrl(cat.imageUrl),
+                  )}
+                />
               </div>
               <div className="p-3 text-center">
                 <h2 className="text-sm font-semibold text-on-surface transition-colors group-hover:text-primary">

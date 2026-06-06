@@ -19,7 +19,10 @@ import {
   formatCurrency,
   calculateDiscountPercentage,
 } from "@/shared/utils/helper";
-import { getActivityImageUrl } from "@/shared/utils/images";
+import {
+  getActivityImageUrl,
+  isLocalPlaceholderImage,
+} from "@/shared/utils/images";
 import { toast } from "sonner";
 import type { SportActivity } from "@/shared/types";
 
@@ -118,7 +121,7 @@ export function ActivityDetailClient({ activity }: ActivityDetailClientProps) {
               fill
               className="object-cover"
               priority
-              unoptimized={images[activeImg].endsWith(".svg")}
+              unoptimized={isLocalPlaceholderImage(images[activeImg])}
             />
             {discount > 0 && (
               <span className="absolute top-4 right-4 rounded-full bg-tertiary px-3 py-1 text-sm font-bold text-on-primary">
@@ -144,7 +147,7 @@ export function ActivityDetailClient({ activity }: ActivityDetailClientProps) {
                     alt=""
                     fill
                     className="object-cover"
-                    unoptimized={img.endsWith(".svg")}
+                    unoptimized={isLocalPlaceholderImage(img)}
                   />
                 </button>
               ))}

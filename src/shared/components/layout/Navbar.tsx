@@ -35,6 +35,7 @@ const navLinks = [
     href: "/me",
     label: "Profil",
     match: (path: string) => path === "/me",
+    authOnly: true,
   },
 ];
 
@@ -44,6 +45,10 @@ export const Navbar = () => {
   const { totalItems } = useCartStore();
   const { mutate: logout } = useLogout();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+  const visibleNavLinks = navLinks.filter(
+    (link) => isAuthenticated || !("authOnly" in link && link.authOnly),
+  );
 
   const handleLogout = () => {
     logout({
@@ -76,7 +81,7 @@ export const Navbar = () => {
           className="hidden items-center gap-8 md:flex"
           aria-label="Main navigation"
         >
-          {navLinks.map((link) => {
+          {visibleNavLinks.map((link) => {
             const active = link.match(pathname);
             return (
               <Link
@@ -162,7 +167,7 @@ export const Navbar = () => {
       {isMobileMenuOpen && (
         <div className="border-t border-outline-variant bg-background/95 backdrop-blur-md md:hidden">
           <div className="space-y-1 px-4 py-4">
-            {navLinks.map((link) => {
+            {visibleNavLinks.map((link) => {
               const active = link.match(pathname);
               return (
                 <Link

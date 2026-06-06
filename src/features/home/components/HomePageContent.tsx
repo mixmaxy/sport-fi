@@ -20,7 +20,10 @@ import {
 } from "lucide-react";
 import { Button } from "@/shared/components/ui/Button";
 import { formatCurrency, calculateDiscountPercentage } from "@/shared/utils/helper";
-import { getActivityImageUrl } from "@/shared/utils/images";
+import {
+  getActivityImageUrl,
+  isLocalPlaceholderImage,
+} from "@/shared/utils/images";
 import type { SportActivity, SportCategory } from "@/shared/types";
 
 const heroImage =
@@ -225,7 +228,9 @@ export function HomePageContent({ categories, activities }: HomePageContentProps
                       alt={activity.title}
                       fill
                       className="object-cover transition-transform duration-700 group-hover:scale-105"
-                      unoptimized={!activity.imageUrls?.[0]}
+                      unoptimized={isLocalPlaceholderImage(
+                        getActivityImageUrl(activity.imageUrls),
+                      )}
                     />
                     <div className="absolute top-4 right-4 flex items-center gap-1 rounded-lg bg-white/90 px-3 py-1 shadow-sm backdrop-blur-sm">
                       <Star

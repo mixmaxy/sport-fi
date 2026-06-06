@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="600" viewBox="0 0 800 600" role="img" aria-label="Gambar tidak tersedia">
+  <rect width="800" height="600" fill="#EFF4FF"/>
+  <rect x="275" y="175" width="250" height="190" rx="16" fill="#D3E4FE" stroke="#C2C6D6" stroke-width="2"/>
+  <circle cx="340" cy="240" r="22" fill="#0058BE" opacity="0.35"/>
+  <path d="M275 335 L360 265 L430 305 L525 235 L525 365 L275 365 Z" fill="#0058BE" opacity="0.45"/>
+  <text x="400" y="420" text-anchor="middle" fill="#424754" font-family="system-ui, -apple-system, sans-serif" font-size="20" font-weight="600">Gambar tidak tersedia</text>
+  <text x="400" y="450" text-anchor="middle" fill="#0058BE" font-family="system-ui, -apple-system, sans-serif" font-size="14" font-weight="700">Sport Reserve</text>
+</svg>
