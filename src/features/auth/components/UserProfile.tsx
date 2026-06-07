@@ -95,7 +95,11 @@ export const UserProfile = () => {
     updateUser(
       {
         id: user.id,
-        data: { ...data, profilePictureUrl: profilePictureUrl ?? undefined },
+        data: {
+          ...data,
+          role: user.role,
+          profilePictureUrl: profilePictureUrl ?? undefined,
+        },
       },
       {
         onSuccess: () => {

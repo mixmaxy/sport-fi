@@ -18,10 +18,6 @@ function readLegacyUser(): User | null {
   }
 }
 
-/**
- * When persist has token + isAuthenticated but user is missing, recover via
- * legacy localStorage or GET /me so protected pages do not render blank.
- */
 export function useRestoreAuthSession(options?: { redirectToLogin?: boolean }) {
   const router = useRouter();
   const redirectToLogin = options?.redirectToLogin ?? true;
@@ -92,8 +88,7 @@ export function useRestoreAuthSession(options?: { redirectToLogin?: boolean }) {
   ]);
 
   return {
-    isRestoring:
-      hasHydrated && isAuthenticated && !user && isRestoring,
+    isRestoring: hasHydrated && isAuthenticated && !user && isRestoring,
     isReady: hasHydrated && (!isAuthenticated || !!user),
   };
 }

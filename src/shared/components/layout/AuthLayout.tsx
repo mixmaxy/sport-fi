@@ -2,8 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 
 const authHeroImage =
-  "https://lh3.googleusercontent.com/aida-public/AB6AXuCTaq1iLwJO26WrcUMKZx0s0IBuq69xC0QeiDiEi6_RB6BHlAUFXDiBDCjBaG37_x8aft-EsvK6vfejnGO-beA4GyYN0TYgFFeSVHGfwqWXGBPNTr8P5KbUjokQHxvqDB4UY0GbxvwWPurb6TBFFu9Yj6kLwHP9A_0qpe5ory0_kvK5sj_Mw5BsyIUhn4fpaqY5QjpOwZJ0GQkgAqnVdxqfZSOKc0xfipytfsRsWwXiX92iEFJQ9QBJs575pv6urxFmiydoMXn-mkk";
-
+  "https://images.unsplash.com/photo-1574629810360-7efbbe195018?auto=format&fit=crop&w=1920&q=80";
 interface AuthLayoutProps {
   children: React.ReactNode;
   title: string;

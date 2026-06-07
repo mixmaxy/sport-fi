@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import type { CartItem, SportActivity } from '@/shared/types';
+import { getActivityFinalPrice } from '@/shared/utils/helper';
 
 interface CartState {
     // State
@@ -90,26 +91,45 @@ export const useCartStore = create<CartState>()(
             partialize: (state) => ({
                 items: state.items,
             }),
+            merge: (persisted, current) => {
+                const items =
+                    (persisted as Partial<CartState> | undefined)?.items ??
+                    current.items;
+                return {
+                    ...current,
+                    items,
+                    ...computeCartTotals(items),
+                };
+            },
+            onRehydrateStorage: () => (_state, error) => {
+                if (!error) {
+                    updateComputedValues(useCartStore.getState);
+                }
+            },
         }
     )
 );
 
-/**
- * Helper function to update computed values
- * 
- * Why: Keeps totalItems and totalPrice in sync with items array
- * This could also be done with selectors, but storing computed
- * values makes them immediately available without recalculation
- */
-function updateComputedValues(get: () => CartState) {
-    const { items } = get();
-
+function computeCartTotals(items: CartItem[]) {
     const totalItems = items.reduce((sum, item) => sum + item.quantity, 0);
     const totalPrice = items.reduce((sum, item) => {
-        const price = item.activity.priceDiscount || item.activity.price;
-        return sum + (price * item.quantity);
+        const price = getActivityFinalPrice(
+            item.activity.price,
+            item.activity.priceDiscount,
+        );
+        return sum + price * item.quantity;
     }, 0);
+    return { totalItems, totalPrice };
+}
 
-    // Use set from the store instance
-    useCartStore.setState({ totalItems, totalPrice });
+export function selectCartTotalItems(state: CartState): number {
+    return state.items.reduce((sum, item) => sum + item.quantity, 0);
+}
+
+export function selectCartTotalPrice(state: CartState): number {
+    return computeCartTotals(state.items).totalPrice;
+}
+
+function updateComputedValues(get: () => CartState) {
+    useCartStore.setState(computeCartTotals(get().items));
 }

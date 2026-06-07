@@ -49,13 +49,40 @@ export const formatDate = (date: string | Date, format: 'short' | 'long' = 'shor
 };
 
 /**
+ * True when API returned a valid discounted price (not null/0 and below list price).
+ */
+export function hasActivityDiscount(
+    price: number,
+    priceDiscount?: number | null,
+): boolean {
+    return (
+        typeof priceDiscount === "number" &&
+        Number.isFinite(priceDiscount) &&
+        priceDiscount > 0 &&
+        price > 0 &&
+        priceDiscount < price
+    );
+}
+
+/** Effective price shown to users and used in cart totals. */
+export function getActivityFinalPrice(
+    price: number,
+    priceDiscount?: number | null,
+): number {
+    return hasActivityDiscount(price, priceDiscount) ? priceDiscount : price;
+}
+
+/**
  * Calculate discount percentage
- * 
+ *
  * Why: Displays discount percentage for better UX
  */
-export const calculateDiscountPercentage = (originalPrice: number, discountPrice: number): number => {
-    if (originalPrice <= 0 || discountPrice >= originalPrice) return 0;
-    return Math.round(((originalPrice - discountPrice) / originalPrice) * 100);
+export const calculateDiscountPercentage = (
+    originalPrice: number,
+    discountPrice?: number | null,
+): number => {
+    if (!hasActivityDiscount(originalPrice, discountPrice)) return 0;
+    return Math.round(((originalPrice - discountPrice!) / originalPrice) * 100);
 };
 
 /**

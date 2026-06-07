@@ -34,9 +34,9 @@ export function ActivitiesPageClient({
   initialFilters,
 }: ActivitiesPageClientProps) {
   const [filters, setFilters] = useState<ActivityFilterValues>({
-    search: "",
+    search: initialFilters?.search ?? "",
     categoryId: initialFilters?.sportCategoryId ?? "",
-    provinceId: "",
+    provinceId: initialFilters?.provinceId ?? "",
     cityId: initialFilters?.cityId ?? "",
   });
   const [page, setPage] = useState(1);

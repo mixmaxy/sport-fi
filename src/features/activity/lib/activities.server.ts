@@ -3,6 +3,7 @@ import type { SportActivity } from "@/shared/types";
 
 export interface GetActivitiesParams {
   sportCategoryId?: string;
+  provinceId?: string;
   cityId?: string;
   search?: string;
   page?: number;

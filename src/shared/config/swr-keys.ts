@@ -16,7 +16,11 @@ export const swrKeys = {
       params?.isPaginate ?? "",
     ] as const,
   myTransactions: "/my-transaction",
-  allTransactionsList: (params?: { search?: string; page?: number; perPage?: number }) =>
+  allTransactionsList: (params?: {
+    search?: string;
+    page?: number;
+    perPage?: number;
+  }) =>
     [
       "/all-transaction",
       params?.search ?? "",
@@ -25,6 +29,6 @@ export const swrKeys = {
     ] as const,
   provinces: "/location/provinces",
   citiesByProvince: (provinceId: string) =>
-    `/location/cities-by-province/${provinceId}` as const,
+    `/location/cities/${provinceId}` as const,
   paymentMethods: "/payment-methods",
 } as const;
