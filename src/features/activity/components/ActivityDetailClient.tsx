@@ -18,6 +18,7 @@ import { Button } from "@/shared/components/ui/Button";
 import {
   formatCurrency,
   calculateDiscountPercentage,
+  getActivityFinalPrice,
 } from "@/shared/utils/helper";
 import {
   getActivityImageUrl,
@@ -42,12 +43,12 @@ export function ActivityDetailClient({ activity }: ActivityDetailClientProps) {
   const inCart = getItemQuantity(activity.id);
   const discount = calculateDiscountPercentage(
     activity.price,
-    activity.priceDiscount ?? 0,
+    activity.priceDiscount,
   );
-  const finalPrice =
-    (activity.priceDiscount ?? 0) > 0
-      ? (activity.priceDiscount ?? activity.price)
-      : activity.price;
+  const finalPrice = getActivityFinalPrice(
+    activity.price,
+    activity.priceDiscount,
+  );
 
   const handleAddToCart = () => {
     if (!isAuthenticated) {

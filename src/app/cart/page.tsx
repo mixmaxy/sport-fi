@@ -10,19 +10,23 @@ import {
   ArrowRight,
   Shield,
 } from "lucide-react";
-import { useCartStore } from "@/store/useCartStore";
+import { useCartStore, selectCartTotalPrice } from "@/store/useCartStore";
 import { useAuthStore } from "@/store/useAuthStore";
 import { Button } from "@/shared/components/ui/Button";
 import { PageShell } from "@/shared/components/layout/PageShell";
-import { formatCurrency } from "@/shared/utils/helper";
+import {
+  formatCurrency,
+  getActivityFinalPrice,
+  hasActivityDiscount,
+} from "@/shared/utils/helper";
 import {
   getActivityImageUrl,
   isLocalPlaceholderImage,
 } from "@/shared/utils/images";
 
 export default function CartPage() {
-  const { items, removeItem, updateQuantity, clearCart, totalPrice } =
-    useCartStore();
+  const { items, removeItem, updateQuantity, clearCart } = useCartStore();
+  const totalPrice = useCartStore(selectCartTotalPrice);
   const { isAuthenticated } = useAuthStore();
 
   if (items.length === 0) {
@@ -69,10 +73,14 @@ export default function CartPage() {
       <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
         <div className="space-y-4 lg:col-span-2">
           {items.map(({ activity, quantity }) => {
-            const finalPrice =
-              (activity.priceDiscount ?? 0) > 0
-                ? (activity.priceDiscount ?? activity.price)
-                : activity.price;
+            const finalPrice = getActivityFinalPrice(
+              activity.price,
+              activity.priceDiscount,
+            );
+            const showDiscount = hasActivityDiscount(
+              activity.price,
+              activity.priceDiscount,
+            );
 
             return (
               <div
@@ -105,7 +113,7 @@ export default function CartPage() {
 
                     <div className="mt-3 flex flex-wrap items-center justify-between gap-2">
                       <div>
-                        {(activity.priceDiscount ?? 0) > 0 && (
+                        {showDiscount && (
                           <span className="block text-xs text-on-surface-variant line-through">
                             {formatCurrency(activity.price)}
                           </span>
@@ -169,10 +177,10 @@ export default function CartPage() {
 
             <div className="mt-4 space-y-2 text-sm">
               {items.map(({ activity, quantity }) => {
-                const p =
-                  (activity.priceDiscount ?? 0) > 0
-                    ? (activity.priceDiscount ?? activity.price)
-                    : activity.price;
+                const p = getActivityFinalPrice(
+                  activity.price,
+                  activity.priceDiscount,
+                );
                 return (
                   <div
                     key={activity.id}

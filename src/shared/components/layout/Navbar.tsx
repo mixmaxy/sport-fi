@@ -12,7 +12,7 @@ import {
   Shield,
 } from "lucide-react";
 import { useAuthStore } from "@/store/useAuthStore";
-import { useCartStore } from "@/store/useCartStore";
+import { useCartStore, selectCartTotalItems } from "@/store/useCartStore";
 import { useLogout } from "@/features/auth/hooks/useAuthMutations";
 import { Button } from "../ui/Button";
 import { cn } from "@/shared/utils/cn";
@@ -42,7 +42,7 @@ const navLinks = [
 export const Navbar = () => {
   const pathname = usePathname();
   const { isAuthenticated, user } = useAuthStore();
-  const { totalItems } = useCartStore();
+  const totalItems = useCartStore(selectCartTotalItems);
   const { mutate: logout } = useLogout();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 

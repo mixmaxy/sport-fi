@@ -5,12 +5,16 @@ import { useRouter } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 import { CheckCircle2, Loader2, Lock, Shield } from "lucide-react";
-import { useCartStore } from "@/store/useCartStore";
+import { useCartStore, selectCartTotalPrice } from "@/store/useCartStore";
 import { useCreateTransaction } from "@/features/transaction/hooks/useTransactions";
 import { getErrorMessage } from "@/shared/config/api";
 import { Button } from "@/shared/components/ui/Button";
 import { PageShell } from "@/shared/components/layout/PageShell";
-import { formatCurrency } from "@/shared/utils/helper";
+import {
+  formatCurrency,
+  getActivityFinalPrice,
+  hasActivityDiscount,
+} from "@/shared/utils/helper";
 import { cn } from "@/shared/utils/cn";
 import { toast } from "sonner";
 import type { PaymentMethod } from "@/shared/types";
@@ -21,7 +25,8 @@ interface CheckoutClientProps {
 
 export function CheckoutClient({ paymentMethods }: CheckoutClientProps) {
   const router = useRouter();
-  const { items, totalPrice, clearCart } = useCartStore();
+  const { items, clearCart } = useCartStore();
+  const totalPrice = useCartStore(selectCartTotalPrice);
   const { mutateAsync: createTransaction, isPending } = useCreateTransaction();
 
   const [selectedPaymentId, setSelectedPaymentId] = useState("");
@@ -42,7 +47,12 @@ export function CheckoutClient({ paymentMethods }: CheckoutClientProps) {
         sportActivityId: activity.id,
         quantity,
         price: activity.price,
-        priceDiscount: activity.priceDiscount ?? 0,
+        priceDiscount: hasActivityDiscount(
+          activity.price,
+          activity.priceDiscount,
+        )
+          ? activity.priceDiscount!
+          : 0,
       }));
 
       await createTransaction({
@@ -174,10 +184,10 @@ export function CheckoutClient({ paymentMethods }: CheckoutClientProps) {
 
             <div className="mt-4 space-y-3">
               {items.map(({ activity, quantity }) => {
-                const price =
-                  (activity.priceDiscount ?? 0) > 0
-                    ? (activity.priceDiscount ?? activity.price)
-                    : activity.price;
+                const price = getActivityFinalPrice(
+                  activity.price,
+                  activity.priceDiscount,
+                );
                 return (
                   <div
                     key={activity.id}

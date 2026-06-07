@@ -7,6 +7,7 @@ export const revalidate = 300;
 interface ActivitiesPageProps {
   searchParams: Promise<{
     category?: string;
+    province?: string;
     cityId?: string;
     search?: string;
     page?: string;
@@ -19,6 +20,7 @@ export default async function ActivitiesPage({
   const params = await searchParams;
   const initialFilters = {
     sportCategoryId: params.category,
+    provinceId: params.province,
     cityId: params.cityId,
     search: params.search,
     page: params.page ? Number(params.page) : 1,

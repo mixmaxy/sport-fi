@@ -1,10 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
 import {
-  MapPin,
-  Search,
-  Calendar,
-  Star,
   ArrowRight,
   Dumbbell,
   Waves,
@@ -18,20 +14,18 @@ import {
   Users,
   type LucideIcon,
 } from "lucide-react";
-import { Button } from "@/shared/components/ui/Button";
-import { formatCurrency, calculateDiscountPercentage } from "@/shared/utils/helper";
-import {
-  getActivityImageUrl,
-  isLocalPlaceholderImage,
-} from "@/shared/utils/images";
-import type { SportActivity, SportCategory } from "@/shared/types";
+import { HeroSearchBar } from "@/features/home/components/HeroSearchBar";
+import { PartnerCtaButtons } from "@/features/home/components/PartnerCtaButtons";
+import { PopularVenuesSection } from "@/features/home/components/PopularVenuesSection";
+import type { Province, SportActivity, SportCategory } from "@/shared/types";
 
 const heroImage =
-  "https://lh3.googleusercontent.com/aida-public/AB6AXuBuBVkprj6We4NUVJhm6OO_9EgalgOauwRx8LMPhLUQAeIY6T2G5GZxkJK2NTdhU-thXu-GgwOSljjaqKKDB83UrC2FyvbnZJYhRsw3-NLAguqV4YTKRX2m-3EMiYf5M9fwBrpJFFCSPGOqk1cgxgUERgC-vFkwlcAfd-poPHojmSt9eWucRBIdp8amtIibcp3Ngl1UWBBsp_7dQAvh7LOPnN-SE1bgac4M_Gqi0pi6FYICGFn3p8NI5v2scO3Cd2c8fnldir9e2rA";
+  "https://images.unsplash.com/photo-1546519638-68e109498ffc?auto=format&fit=crop&w=1920&q=80";
 
 interface HomePageContentProps {
   categories: SportCategory[];
   activities: SportActivity[];
+  provinces: Province[];
 }
 
 const categoryPreviewLimit = 7;
@@ -53,7 +47,11 @@ function getCategoryIcon(name: string): LucideIcon {
   return Trophy;
 }
 
-export function HomePageContent({ categories, activities }: HomePageContentProps) {
+export function HomePageContent({
+  categories,
+  activities,
+  provinces,
+}: HomePageContentProps) {
   const popularActivities = activities.slice(0, 6);
   const previewCategories = categories.slice(0, categoryPreviewLimit);
   const remainingCategoryCount = Math.max(
@@ -64,7 +62,7 @@ export function HomePageContent({ categories, activities }: HomePageContentProps
   return (
     <div className="min-h-screen bg-background">
       {/* Hero */}
-      <section className="relative flex min-h-[85vh] items-center justify-center overflow-hidden">
+      <section className="relative flex min-h-[88vh] items-center justify-center overflow-hidden pb-8 pt-24 md:min-h-[85vh] md:pb-0 md:pt-0">
         <Image
           src={heroImage}
           alt="Fasilitas olahraga indoor"
@@ -73,62 +71,17 @@ export function HomePageContent({ categories, activities }: HomePageContentProps
           className="object-cover"
           sizes="100vw"
         />
-        <div className="absolute inset-0 bg-linear-to-t from-inverse-surface/80 via-inverse-surface/20 to-transparent" />
-        <div className="relative z-10 mx-auto max-w-4xl px-4 text-center sm:px-6">
-          <h1 className="mb-4 text-4xl font-extrabold tracking-tight text-white drop-shadow-xl md:text-5xl lg:text-6xl">
+        <div className="absolute inset-0 bg-linear-to-t from-inverse-surface/90 via-inverse-surface/40 to-inverse-surface/30 md:from-inverse-surface/80 md:via-inverse-surface/20 md:to-transparent" />
+        <div className="relative z-10 mx-auto w-full max-w-5xl px-4 text-center sm:px-6">
+          <h1 className="mb-3 text-3xl font-extrabold leading-tight tracking-tight text-white drop-shadow-xl sm:text-4xl md:mb-4 md:text-5xl lg:text-6xl">
             Book Your Next Game
           </h1>
-          <p className="mx-auto mb-12 max-w-2xl text-lg text-white/90 md:text-xl">
+          <p className="mx-auto mb-6 max-w-2xl text-base leading-relaxed text-white/95 sm:text-lg md:mb-10 md:text-xl">
             Discover and reserve top-tier sports venues in your city with
             professional lighting and championship-standard surfaces.
           </p>
 
-          <div className="mx-auto flex max-w-5xl flex-col items-stretch gap-2 rounded-xl bg-white/85 p-4 shadow-2xl backdrop-blur-md md:flex-row md:p-2">
-            <div className="flex flex-1 items-center gap-3 rounded-lg border border-outline-variant bg-surface-container-low px-4 focus-within:border-primary focus-within:ring-1 focus-within:ring-primary">
-              <MapPin className="h-5 w-5 shrink-0 text-on-surface-variant" aria-hidden />
-              <input
-                type="text"
-                readOnly
-                placeholder="Select Location"
-                className="w-full bg-transparent py-4 text-on-surface outline-none placeholder:text-on-surface-variant"
-                aria-label="Lokasi"
-              />
-            </div>
-            <div className="flex flex-1 items-center gap-3 rounded-lg border border-outline-variant bg-surface-container-low px-4 focus-within:border-primary focus-within:ring-1 focus-within:ring-primary">
-              <Calendar className="h-5 w-5 shrink-0 text-on-surface-variant" aria-hidden />
-              <input
-                type="text"
-                readOnly
-                placeholder="Choose Date"
-                className="w-full bg-transparent py-4 text-on-surface outline-none placeholder:text-on-surface-variant"
-                aria-label="Tanggal"
-              />
-            </div>
-            <div className="flex flex-1 items-center gap-3 rounded-lg border border-outline-variant bg-surface-container-low px-4 focus-within:border-primary focus-within:ring-1 focus-within:ring-primary">
-              <Search className="h-5 w-5 shrink-0 text-on-surface-variant" aria-hidden />
-              <select
-                className="w-full appearance-none bg-transparent py-4 text-on-surface outline-none"
-                defaultValue=""
-                aria-label="Kategori olahraga"
-              >
-                <option value="">All Sports</option>
-                {categories.map((cat) => (
-                  <option key={cat.id} value={cat.id}>
-                    {cat.name}
-                  </option>
-                ))}
-              </select>
-            </div>
-            <Link href="/activities" className="shrink-0">
-              <Button
-                size="lg"
-                className="h-full w-full gap-2 rounded-lg bg-primary px-10 py-4 font-bold uppercase tracking-wide hover:brightness-110"
-                leftIcon={<Search className="h-5 w-5" />}
-              >
-                Search
-              </Button>
-            </Link>
-          </div>
+          <HeroSearchBar categories={categories} provinces={provinces} />
         </div>
       </section>
 
@@ -182,117 +135,7 @@ export function HomePageContent({ categories, activities }: HomePageContentProps
         </section>
       )}
 
-      {/* Popular Venues */}
-      <section className="bg-surface-container-lowest py-20">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="mb-12 flex flex-col justify-between gap-4 md:flex-row md:items-end">
-            <div>
-              <h2 className="mb-2 text-3xl font-bold tracking-tight text-on-surface">
-                Popular Venues
-              </h2>
-              <p className="text-on-surface-variant">
-                Top rated sports facilities recommended for you
-              </p>
-            </div>
-            <Link
-              href="/activities"
-              className="flex items-center gap-2 font-bold text-primary hover:underline"
-            >
-              View All Venues
-              <ArrowRight className="h-5 w-5" />
-            </Link>
-          </div>
-
-          <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {popularActivities.map((activity) => {
-              const discount = calculateDiscountPercentage(
-                activity.price,
-                activity.priceDiscount ?? 0,
-              );
-              const finalPrice =
-                (activity.priceDiscount ?? 0) > 0
-                  ? (activity.priceDiscount ?? activity.price)
-                  : activity.price;
-              const categoryLabel =
-                activity.category?.name ?? "Sport";
-
-              return (
-                <Link
-                  key={activity.id}
-                  href={`/activities/${activity.id}`}
-                  className="group relative block overflow-hidden rounded-xl border border-outline-variant bg-white shadow-sm transition-all duration-500 hover:shadow-xl"
-                >
-                  <div className="relative aspect-video overflow-hidden">
-                    <Image
-                      src={getActivityImageUrl(activity.imageUrls)}
-                      alt={activity.title}
-                      fill
-                      className="object-cover transition-transform duration-700 group-hover:scale-105"
-                      unoptimized={isLocalPlaceholderImage(
-                        getActivityImageUrl(activity.imageUrls),
-                      )}
-                    />
-                    <div className="absolute top-4 right-4 flex items-center gap-1 rounded-lg bg-white/90 px-3 py-1 shadow-sm backdrop-blur-sm">
-                      <Star
-                        className="h-4 w-4 fill-tertiary text-tertiary"
-                        aria-hidden
-                      />
-                      <span className="text-sm font-semibold text-on-surface">
-                        {(activity.rating ?? 0).toFixed(1)}
-                      </span>
-                    </div>
-                    <span className="absolute top-4 left-4 rounded-full bg-primary px-3 py-1 text-xs font-bold tracking-wider text-on-primary uppercase">
-                      {categoryLabel}
-                    </span>
-                  </div>
-
-                  <div className="p-6">
-                    <div className="mb-2 flex items-start justify-between gap-2">
-                      <h3 className="text-lg font-bold text-on-surface line-clamp-2">
-                        {activity.title}
-                      </h3>
-                      <p className="shrink-0 text-lg font-bold text-primary">
-                        {formatCurrency(finalPrice)}
-                        <span className="text-sm font-normal text-on-surface-variant">
-                          /sesi
-                        </span>
-                      </p>
-                    </div>
-                    {discount > 0 && (
-                      <p className="mb-2 text-sm text-on-surface-variant line-through">
-                        {formatCurrency(activity.price)}
-                      </p>
-                    )}
-                    <p className="mb-6 flex items-center gap-1 text-on-surface-variant">
-                      <MapPin className="h-4 w-4 shrink-0" aria-hidden />
-                      <span className="line-clamp-1">
-                        {activity.city?.name ?? activity.cityId},{" "}
-                        {activity.province?.name ?? activity.provinceId}
-                      </span>
-                    </p>
-                    <div className="flex items-center gap-3 border-t border-outline-variant pt-4">
-                      <div className="flex -space-x-2">
-                        <div className="h-8 w-8 rounded-full border-2 border-white bg-slate-200" />
-                        <div className="h-8 w-8 rounded-full border-2 border-white bg-slate-300" />
-                        <div className="flex h-8 w-8 items-center justify-center rounded-full border-2 border-white bg-[#adc6ff] text-[10px] font-bold text-[#001a42]">
-                          +{Math.min(activity.totalReviews ?? 0, 99)}
-                        </div>
-                      </div>
-                      <span className="text-sm text-on-surface-variant">
-                        booked this week
-                      </span>
-                    </div>
-                  </div>
-
-                  <span className="pointer-events-none absolute right-6 bottom-6 translate-y-4 rounded-lg bg-primary px-6 py-2.5 text-sm font-bold text-on-primary opacity-0 shadow-lg transition-all duration-300 group-hover:translate-y-0 group-hover:opacity-100">
-                    BOOK NOW
-                  </span>
-                </Link>
-              );
-            })}
-          </div>
-        </div>
-      </section>
+      <PopularVenuesSection activities={popularActivities} />
 
       {/* Partner CTA */}
       <section className="relative overflow-hidden bg-inverse-surface px-4 py-24 sm:px-6 lg:px-8">
@@ -311,25 +154,7 @@ export function HomePageContent({ categories, activities }: HomePageContentProps
               and grow your community with Sport Reserve&apos;s premium management
               platform.
             </p>
-            <div className="flex flex-wrap gap-4">
-              <Link href="/register">
-                <Button
-                  size="lg"
-                  className="bg-primary px-8 uppercase tracking-widest shadow-xl shadow-primary/20 hover:brightness-110"
-                >
-                  List Your Venue
-                </Button>
-              </Link>
-              <Link href="/categories">
-                <Button
-                  variant="outline"
-                  size="lg"
-                  className="border-outline-variant px-8 text-white uppercase tracking-widest hover:bg-white/10"
-                >
-                  Learn More
-                </Button>
-              </Link>
-            </div>
+            <PartnerCtaButtons />
           </div>
 
           <div className="grid w-full grid-cols-2 gap-6 lg:w-1/2">
@@ -374,10 +199,12 @@ function PartnerFeatureCard({
   description: string;
 }) {
   return (
-    <div className="rounded-2xl border border-white/10 bg-white/5 p-8 backdrop-blur-sm transition-colors hover:bg-white/10">
-      <Icon className="mb-4 h-10 w-10 text-primary" aria-hidden />
+    <div className="rounded-2xl border border-white/15 bg-white/10 p-6 backdrop-blur-sm transition-colors hover:border-white/25 hover:bg-white/15 sm:p-8">
+      <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-primary/20">
+        <Icon className="h-6 w-6 text-[#adc6ff]" aria-hidden />
+      </div>
       <h4 className="mb-2 text-lg font-bold text-white">{title}</h4>
-      <p className="text-sm text-on-surface-variant">{description}</p>
+      <p className="text-sm leading-relaxed text-[#c5cee0]">{description}</p>
     </div>
   );
 }

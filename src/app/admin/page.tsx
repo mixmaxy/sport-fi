@@ -35,7 +35,7 @@ import { useUploadImage } from "@/features/file/hooks/useUploadImage";
 import { Button } from "@/shared/components/ui/Button";
 import { Input } from "@/shared/components/ui/Input";
 import { Card } from "@/shared/components/ui/Card";
-import { formatCurrency } from "@/shared/utils/helper";
+import { formatCurrency, getActivityFinalPrice } from "@/shared/utils/helper";
 import {
   getActivityImageUrl,
   getCategoryImageUrl,
@@ -415,6 +415,10 @@ const ActivitiesManagement = () => {
   const [description, setDescription] = useState("");
   const [price, setPrice] = useState("");
   const [priceDiscount, setPriceDiscount] = useState("");
+  const [slot, setSlot] = useState("1");
+  const [activityDate, setActivityDate] = useState("");
+  const [startTime, setStartTime] = useState("08:00");
+  const [endTime, setEndTime] = useState("10:00");
   const [facilities, setFacilities] = useState("");
   const [address, setAddress] = useState("");
   const [provinceId, setProvinceId] = useState("");
@@ -434,6 +438,10 @@ const ActivitiesManagement = () => {
     setDescription("");
     setPrice("");
     setPriceDiscount("");
+    setSlot("1");
+    setActivityDate("");
+    setStartTime("08:00");
+    setEndTime("10:00");
     setFacilities("");
     setAddress("");
     setProvinceId("");
@@ -451,6 +459,10 @@ const ActivitiesManagement = () => {
     setDescription(act.description);
     setPrice(String(act.price));
     setPriceDiscount(String(act.priceDiscount || ""));
+    setSlot(String(act.slot ?? 1));
+    setActivityDate(act.activityDate?.slice(0, 10) ?? "");
+    setStartTime(act.startTime?.slice(0, 5) ?? "08:00");
+    setEndTime(act.endTime?.slice(0, 5) ?? "10:00");
     setFacilities(act.facilities || "");
     setAddress(act.address);
     setProvinceId(act.provinceId ?? "");
@@ -510,15 +522,18 @@ const ActivitiesManagement = () => {
     if (!sportCategoryId) return toast.error("Kategori wajib dipilih.");
     if (!price || Number(price) <= 0)
       return toast.error("Harga tiket valid wajib diisi.");
+    if (!slot || Number(slot) <= 0)
+      return toast.error("Jumlah slot wajib diisi (minimal 1).");
+    if (!activityDate) return toast.error("Tanggal aktivitas wajib diisi.");
+    if (!startTime) return toast.error("Waktu mulai wajib diisi.");
+    if (!endTime) return toast.error("Waktu selesai wajib diisi.");
+    if (startTime >= endTime)
+      return toast.error("Waktu selesai harus setelah waktu mulai.");
     if (!address.trim()) return toast.error("Alamat aktivitas wajib diisi.");
     if (!provinceId) return toast.error("Provinsi wajib dipilih.");
     if (!cityId) return toast.error("Kota wajib dipilih.");
     const finalImageUrls =
-      imageUrls.length > 0
-        ? imageUrls
-        : editingId
-          ? originalImageUrls
-          : [];
+      imageUrls.length > 0 ? imageUrls : editingId ? originalImageUrls : [];
     if (!editingId && finalImageUrls.length === 0)
       return toast.error("Unggah minimal satu gambar untuk aktivitas baru.");
 
@@ -526,6 +541,10 @@ const ActivitiesManagement = () => {
       sportCategoryId,
       title,
       description,
+      slot: Number(slot),
+      activityDate,
+      startTime,
+      endTime,
       price: Number(price),
       priceDiscount: priceDiscount ? Number(priceDiscount) : 0,
       facilities,
@@ -626,7 +645,9 @@ const ActivitiesManagement = () => {
                       {act.category?.name || "-"}
                     </td>
                     <td className="px-6 py-4 font-semibold text-blue-600">
-                      {formatCurrency(act.priceDiscount || act.price)}
+                      {formatCurrency(
+                        getActivityFinalPrice(act.price, act.priceDiscount),
+                      )}
                     </td>
                     <td className="px-6 py-4 text-gray-500 truncate max-w-[150px]">
                       {act.city?.name ?? act.cityId}
@@ -733,6 +754,40 @@ const ActivitiesManagement = () => {
                   onChange={(e) => setPriceDiscount(e.target.value)}
                   placeholder="Contoh: 85000"
                   leftIcon={<DollarSign className="w-4 h-4 text-gray-400" />}
+                />
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <Input
+                  label="Jumlah Slot"
+                  type="number"
+                  min={1}
+                  value={slot}
+                  onChange={(e) => setSlot(e.target.value)}
+                  placeholder="Contoh: 2"
+                  required
+                  helperText="Kapasitas peserta / sesi yang tersedia"
+                />
+                <Input
+                  label="Tanggal Aktivitas"
+                  type="date"
+                  value={activityDate}
+                  onChange={(e) => setActivityDate(e.target.value)}
+                  required
+                />
+                <Input
+                  label="Waktu Mulai"
+                  type="time"
+                  value={startTime}
+                  onChange={(e) => setStartTime(e.target.value)}
+                  required
+                />
+                <Input
+                  label="Waktu Selesai"
+                  type="time"
+                  value={endTime}
+                  onChange={(e) => setEndTime(e.target.value)}
+                  required
                 />
               </div>
 

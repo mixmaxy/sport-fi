@@ -51,6 +51,7 @@ export interface UpdateUserRequest {
   email?: string;
   phoneNumber?: string;
   profilePictureUrl?: string;
+  role?: "user" | "admin";
 }
 
 export interface Province {
