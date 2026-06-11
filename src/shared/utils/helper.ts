@@ -140,7 +140,10 @@ export const getStatusColor = (status: string): string => {
     cancelled: "bg-red-100 text-red-800",
   };
 
-  return statusColors[status.toLowerCase()] || "bg-gray-100 text-gray-800";
+  return (
+    statusColors[status.toLowerCase()] ||
+    "bg-surface-container-high text-on-surface"
+  );
 };
 
 export const getStatusLabel = (status: string): string => {

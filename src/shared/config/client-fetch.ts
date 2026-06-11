@@ -26,8 +26,9 @@ function toQueryResult<T>(swr: ReturnType<typeof useSWR<T>>) {
   return {
     data: swr.data,
     isLoading: swr.isLoading,
+    isValidating: swr.isValidating,
     isError: !!swr.error,
-    refetch: () => swr.mutate(),  
+    refetch: () => swr.mutate(),
   };
 }
 
@@ -67,7 +68,7 @@ export function useActivitiesList(
   const swr = useSWR(
     enabled ? swrKeys.activitiesList(params) : null,
     () => getActivitiesPage(params),
-    defaultQueryOptions,
+    { ...defaultQueryOptions, keepPreviousData: true },
   );
   return toQueryResult(swr);
 }
