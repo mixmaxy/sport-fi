@@ -1,3 +1,3 @@
 "use client";
 
-export { useCategoriesList } from "@/shared/config/client-fetch";
+export { useCategoriesList, useCategoriesPage } from "@/shared/config/client-fetch";

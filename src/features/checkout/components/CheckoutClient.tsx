@@ -55,10 +55,12 @@ export function CheckoutClient({ paymentMethods }: CheckoutClientProps) {
           : 0,
       }));
 
-      await createTransaction({
-        paymentMethodId: selectedPaymentId,
-        transactionItems,
-      });
+      for (const item of transactionItems) {
+        await createTransaction({
+          paymentMethodId: selectedPaymentId,
+          transactionItems: [item],
+        });
+      }
       clearCart();
       setSuccess(true);
       toast.success(

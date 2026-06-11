@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import {
@@ -13,9 +14,10 @@ import {
   Zap,
   MapPin,
   DollarSign,
+  Loader2,
 } from "lucide-react";
 import { useAuthStore } from "@/store/useAuthStore";
-import { useCategoriesList } from "@/features/category/hooks/useCategoriesList";
+import { useCategoriesList, useCategoriesPage } from "@/features/category/hooks/useCategoriesList";
 import {
   useCreateCategory,
   useUpdateCategory,
@@ -39,10 +41,59 @@ import { formatCurrency, getActivityFinalPrice } from "@/shared/utils/helper";
 import {
   getActivityImageUrl,
   getCategoryImageUrl,
-  isLocalPlaceholderImage,
+  skipImageOptimization,
 } from "@/shared/utils/images";
 import { toast } from "sonner";
 import { SportActivity } from "@/shared/types";
+
+const ADMIN_PAGE_SIZE = 8;
+
+function AdminListPagination({
+  currentPage,
+  lastPage,
+  total,
+  isLoading,
+  onPageChange,
+}: {
+  currentPage: number;
+  lastPage: number;
+  total: number;
+  isLoading: boolean;
+  onPageChange: (page: number) => void;
+}) {
+  if (lastPage <= 1 && total === 0) return null;
+
+  return (
+    <div className="flex items-center justify-between pt-2">
+      <Button
+        variant="outline"
+        size="sm"
+        disabled={currentPage <= 1 || isLoading}
+        onClick={() => onPageChange(Math.max(1, currentPage - 1))}
+      >
+        Sebelumnya
+      </Button>
+      <p className="text-sm text-on-surface-variant">
+        Halaman <strong className="text-on-surface">{currentPage}</strong> dari{" "}
+        <strong className="text-on-surface">{lastPage}</strong>
+        {total > 0 ? (
+          <span className="ml-1">({total} item)</span>
+        ) : null}
+        {isLoading ? (
+          <Loader2 className="ml-2 inline h-4 w-4 animate-spin text-primary" />
+        ) : null}
+      </p>
+      <Button
+        variant="outline"
+        size="sm"
+        disabled={currentPage >= lastPage || isLoading}
+        onClick={() => onPageChange(currentPage + 1)}
+      >
+        Selanjutnya
+      </Button>
+    </div>
+  );
+}
 
 export default function AdminPage() {
   const router = useRouter();
@@ -89,7 +140,14 @@ export default function AdminPage() {
           </p>
         </div>
 
-        <div className="flex rounded-xl border border-outline-variant bg-surface-container-low p-1.5">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+          <Link href="/admin/transactions">
+            <Button variant="outline" size="sm">
+              Verifikasi Transaksi
+            </Button>
+          </Link>
+
+          <div className="flex rounded-xl border border-outline-variant bg-surface-container-low p-1.5">
           <button
             onClick={() => setActiveTab("categories")}
             className={`rounded-lg px-4 py-2 text-xs font-bold transition-all md:text-sm ${
@@ -111,6 +169,7 @@ export default function AdminPage() {
             Manajemen Aktivitas
           </button>
         </div>
+        </div>
       </div>
 
       {activeTab === "categories" ? (
@@ -123,11 +182,16 @@ export default function AdminPage() {
 }
 
 const CategoriesManagement = () => {
+  const [page, setPage] = useState(1);
+
   const {
-    data: categories,
+    data: categoriesPage,
     isLoading,
     refetch: refetchCategories,
-  } = useCategoriesList();
+  } = useCategoriesPage(
+    { page, perPage: ADMIN_PAGE_SIZE, isPaginate: true },
+    true,
+  );
   const { mutate: createCategory } = useCreateCategory();
   const { mutate: updateCategory } = useUpdateCategory();
   const { mutate: deleteCategory } = useDeleteCategory();
@@ -222,7 +286,7 @@ const CategoriesManagement = () => {
     }
   };
 
-  if (isLoading) {
+  if (isLoading && !categoriesPage) {
     return (
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 animate-pulse">
         {[...Array(4)].map((_, i) => (
@@ -231,6 +295,12 @@ const CategoriesManagement = () => {
       </div>
     );
   }
+
+  const categories = categoriesPage?.data ?? [];
+  const currentPage = categoriesPage?.current_page ?? page;
+  const lastPage = Math.max(categoriesPage?.last_page ?? 1, 1);
+  const total = categoriesPage?.total ?? categories.length;
+  const isFetching = isLoading && !!categoriesPage;
 
   return (
     <div className="space-y-6">
@@ -244,7 +314,7 @@ const CategoriesManagement = () => {
         </Button>
       </div>
 
-      {categories?.length === 0 ? (
+      {categories.length === 0 ? (
         <div className="bg-white border border-gray-100 rounded-2xl p-16 text-center shadow-2xs">
           <FolderOpen className="w-12 h-12 text-gray-300 mx-auto mb-4" />
           <h3 className="text-lg font-bold text-gray-800">Kategori Kosong</h3>
@@ -253,8 +323,9 @@ const CategoriesManagement = () => {
           </p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          {categories?.map((cat) => (
+        <div className={isFetching ? "opacity-60 transition-opacity" : undefined}>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          {categories.map((cat) => (
             <Card
               key={cat.id}
               className="overflow-hidden border border-gray-150 rounded-2xl bg-white flex flex-col h-full shadow-2xs"
@@ -265,7 +336,7 @@ const CategoriesManagement = () => {
                   alt={cat.name}
                   fill
                   className="object-cover"
-                  unoptimized={isLocalPlaceholderImage(
+                  unoptimized={skipImageOptimization(
                     getCategoryImageUrl(cat.imageUrl),
                   )}
                 />
@@ -297,6 +368,15 @@ const CategoriesManagement = () => {
               </div>
             </Card>
           ))}
+          </div>
+
+          <AdminListPagination
+            currentPage={currentPage}
+            lastPage={lastPage}
+            total={total}
+            isLoading={isFetching}
+            onPageChange={setPage}
+          />
         </div>
       )}
 
@@ -340,6 +420,7 @@ const CategoriesManagement = () => {
                       alt="preview"
                       fill
                       className="object-cover"
+                      unoptimized={skipImageOptimization(imageUrl)}
                     />
                   </div>
                 )}
@@ -393,11 +474,16 @@ const CategoriesManagement = () => {
 };
 
 const ActivitiesManagement = () => {
+  const [page, setPage] = useState(1);
+
   const {
     data: activitiesPage,
     isLoading,
     refetch: refetchActivities,
-  } = useActivitiesList({ isPaginate: false }, true);
+  } = useActivitiesList(
+    { page, perPage: ADMIN_PAGE_SIZE, isPaginate: true },
+    true,
+  );
   const { data: categories } = useCategoriesList();
   const { data: provinces } = useProvinces();
 
@@ -579,7 +665,7 @@ const ActivitiesManagement = () => {
     }
   };
 
-  if (isLoading) {
+  if (isLoading && !activitiesPage) {
     return (
       <div className="space-y-4 animate-pulse">
         {[...Array(4)].map((_, i) => (
@@ -588,6 +674,12 @@ const ActivitiesManagement = () => {
       </div>
     );
   }
+
+  const activities = activitiesPage?.data ?? [];
+  const currentPage = activitiesPage?.current_page ?? page;
+  const lastPage = Math.max(activitiesPage?.last_page ?? 1, 1);
+  const total = activitiesPage?.total ?? activities.length;
+  const isFetching = isLoading && !!activitiesPage;
 
   return (
     <div className="space-y-6">
@@ -601,7 +693,7 @@ const ActivitiesManagement = () => {
         </Button>
       </div>
 
-      {activitiesPage?.data?.length === 0 ? (
+      {activities.length === 0 ? (
         <div className="bg-white border border-gray-100 rounded-2xl p-16 text-center shadow-2xs">
           <Zap className="w-12 h-12 text-gray-300 mx-auto mb-4" />
           <h3 className="text-lg font-bold text-gray-800">Aktivitas Kosong</h3>
@@ -610,6 +702,7 @@ const ActivitiesManagement = () => {
           </p>
         </div>
       ) : (
+        <div className={isFetching ? "opacity-60 transition-opacity" : undefined}>
         <div className="bg-white rounded-2xl border border-gray-150 overflow-hidden shadow-2xs">
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse">
@@ -623,17 +716,21 @@ const ActivitiesManagement = () => {
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-100 text-sm">
-                {activitiesPage?.data?.map((act) => (
+                {activities.map((act) => (
                   <tr key={act.id} className="hover:bg-gray-50/50">
                     <td className="px-6 py-4 flex items-center gap-3">
                       <div className="relative w-12 h-8 rounded overflow-hidden bg-gray-100 shrink-0">
                         <Image
-                          src={getActivityImageUrl(act.imageUrls)}
+                          src={getActivityImageUrl(
+                            act.imageUrls,
+                            0,
+                            act.id,
+                          )}
                           alt={act.title}
                           fill
                           className="object-cover"
-                          unoptimized={isLocalPlaceholderImage(
-                            getActivityImageUrl(act.imageUrls),
+                          unoptimized={skipImageOptimization(
+                            getActivityImageUrl(act.imageUrls, 0, act.id),
                           )}
                         />
                       </div>
@@ -673,6 +770,15 @@ const ActivitiesManagement = () => {
               </tbody>
             </table>
           </div>
+        </div>
+
+        <AdminListPagination
+          currentPage={currentPage}
+          lastPage={lastPage}
+          total={total}
+          isLoading={isFetching}
+          onPageChange={setPage}
+        />
         </div>
       )}
 

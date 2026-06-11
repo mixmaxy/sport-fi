@@ -4,7 +4,8 @@ import useSWR, { mutate } from "swr";
 import { getCurrentUser } from "@/features/auth/lib/auth.client";
 import { getActivitiesPage } from "@/features/activity/lib/activities.client";
 import type { GetActivitiesParams } from "@/features/activity/lib/activities.server";
-import { getCategories } from "@/features/category/lib/categories.client";
+import { getCategories, getCategoriesPage } from "@/features/category/lib/categories.client";
+import type { GetCategoriesParams } from "@/features/category/lib/categories.client";
 import { getMyTransactions } from "@/features/transaction/lib/transactions.client";
 import {
   getCitiesByProvinceId,
@@ -47,6 +48,18 @@ export function useCategoriesList(enabled = true) {
   return toQueryResult(swr);
 }
 
+export function useCategoriesPage(
+  params?: GetCategoriesParams,
+  enabled = true,
+) {
+  const swr = useSWR(
+    enabled ? swrKeys.categoriesList(params) : null,
+    () => getCategoriesPage(params),
+    defaultQueryOptions,
+  );
+  return toQueryResult(swr);
+}
+
 export function useActivitiesList(
   params?: GetActivitiesParams,
   enabled = true,
@@ -69,7 +82,13 @@ export function useMyTransactions(enabled = true) {
 }
 
 export function useAllTransactions(
-  params?: { search?: string; page?: number; perPage?: number },
+  params?: {
+    search?: string;
+    page?: number;
+    perPage?: number;
+    status?: string;
+    isPaginate?: boolean;
+  },
   enabled = true,
 ) {
   const swr = useSWR(
@@ -107,7 +126,11 @@ export function usePaymentMethods() {
 
 /** Invalidate list caches after admin CRUD or checkout. */
 export function invalidateCategories() {
-  return mutate(swrKeys.categories);
+  return mutate(
+    (key) =>
+      key === swrKeys.categories ||
+      (Array.isArray(key) && key[0] === swrKeys.categories),
+  );
 }
 
 export function invalidateActivities() {
