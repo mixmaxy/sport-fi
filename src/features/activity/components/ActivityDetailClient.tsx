@@ -5,7 +5,6 @@ import { useRouter } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 import {
-  MapPin,
   Star,
   ChevronRight,
   ShoppingCart,
@@ -22,7 +21,7 @@ import {
 } from "@/shared/utils/helper";
 import {
   getActivityImageUrl,
-  isLocalPlaceholderImage,
+  skipImageOptimization,
 } from "@/shared/utils/images";
 import { toast } from "sonner";
 import type { SportActivity } from "@/shared/types";
@@ -64,7 +63,7 @@ export function ActivityDetailClient({ activity }: ActivityDetailClientProps) {
 
   const images = activity.imageUrls?.length
     ? activity.imageUrls
-    : [getActivityImageUrl()];
+    : [getActivityImageUrl(null, 0, activity.id)];
 
   return (
     <div className="min-h-screen bg-background pb-12">
@@ -105,59 +104,55 @@ export function ActivityDetailClient({ activity }: ActivityDetailClientProps) {
                 ({activity.totalReviews ?? 0} reviews)
               </span>
             </div>
-            <div className="flex items-center gap-1 text-on-surface-variant">
-              <MapPin className="h-4 w-4" aria-hidden />
-              <span>
-                {activity.city?.name}, {activity.province?.name}
-              </span>
-            </div>
           </div>
         </div>
 
-        <div className="mb-10 grid h-[280px] grid-cols-1 gap-4 md:h-[420px] md:grid-cols-4">
-          <div className="relative overflow-hidden rounded-xl shadow-sm md:col-span-3">
-            <Image
-              src={images[activeImg]}
-              alt={activity.title}
-              fill
-              className="object-cover"
-              priority
-              unoptimized={isLocalPlaceholderImage(images[activeImg])}
-            />
-            {discount > 0 && (
-              <span className="absolute top-4 right-4 rounded-full bg-tertiary px-3 py-1 text-sm font-bold text-on-primary">
-                -{discount}%
-              </span>
-            )}
-          </div>
-          {images.length > 1 && (
-            <div className="hidden flex-col gap-4 md:flex">
-              {images.slice(0, 3).map((img, i) => (
-                <button
-                  key={i}
-                  type="button"
-                  onClick={() => setActiveImg(i)}
-                  className={`relative min-h-0 flex-1 overflow-hidden rounded-xl border-2 transition-all ${
-                    i === activeImg
-                      ? "border-primary"
-                      : "border-transparent hover:border-outline-variant"
-                  }`}
-                >
-                  <Image
-                    src={img}
-                    alt=""
-                    fill
-                    className="object-cover"
-                    unoptimized={isLocalPlaceholderImage(img)}
-                  />
-                </button>
-              ))}
-            </div>
-          )}
-        </div>
-
-        <div className="grid grid-cols-1 gap-10 lg:grid-cols-3">
+        <div className="grid grid-cols-1 gap-8 lg:grid-cols-3 lg:gap-10">
           <div className="space-y-8 lg:col-span-2">
+            <div className="w-full">
+              <div className="relative aspect-16/10 w-full overflow-hidden rounded-xl shadow-sm sm:aspect-2/1">
+                <Image
+                  src={images[activeImg]}
+                  alt={activity.title}
+                  fill
+                  sizes="(max-width: 1024px) 100vw, 66vw"
+                  className="object-cover"
+                  priority
+                  unoptimized={skipImageOptimization(images[activeImg])}
+                />
+                {discount > 0 && (
+                  <span className="absolute top-4 right-4 rounded-full bg-tertiary px-3 py-1 text-sm font-bold text-on-primary">
+                    -{discount}%
+                  </span>
+                )}
+              </div>
+              {images.length > 1 && (
+                <div className="mt-3 flex gap-3 overflow-x-auto pb-1">
+                  {images.map((img, i) => (
+                    <button
+                      key={i}
+                      type="button"
+                      onClick={() => setActiveImg(i)}
+                      className={`relative h-20 w-28 shrink-0 overflow-hidden rounded-lg border-2 transition-all sm:h-24 sm:w-32 ${
+                        i === activeImg
+                          ? "border-primary"
+                          : "border-transparent hover:border-outline-variant"
+                      }`}
+                    >
+                      <Image
+                        src={img}
+                        alt=""
+                        fill
+                        sizes="128px"
+                        className="object-cover"
+                        unoptimized={skipImageOptimization(img)}
+                      />
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+
             <section className="rounded-xl border border-outline-variant bg-surface-container-lowest p-6">
               <h2 className="mb-4 text-xl font-bold text-on-surface">
                 About this Venue

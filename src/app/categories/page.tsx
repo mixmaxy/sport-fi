@@ -4,7 +4,7 @@ import { fetchCategories } from "@/features/category/lib/categories.server";
 import { PageShell } from "@/shared/components/layout/PageShell";
 import {
   getCategoryImageUrl,
-  isLocalPlaceholderImage,
+  skipImageOptimization,
 } from "@/shared/utils/images";
 
 export const revalidate = 300;
@@ -37,7 +37,7 @@ export default async function CategoriesPage() {
                   alt={cat.name}
                   fill
                   className="object-cover transition-transform duration-300 group-hover:scale-110"
-                  unoptimized={isLocalPlaceholderImage(
+                  unoptimized={skipImageOptimization(
                     getCategoryImageUrl(cat.imageUrl),
                   )}
                 />

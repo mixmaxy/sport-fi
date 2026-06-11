@@ -17,6 +17,7 @@ import {
 import { Input } from "@/shared/components/ui/Input";
 import { Button } from "@/shared/components/ui/Button";
 import { getErrorMessage } from "@/shared/config/api";
+import { skipImageOptimization } from "@/shared/utils/images";
 import type { SportCategory } from "@/shared/types";
 
 const categorySchema = z.object({
@@ -176,6 +177,7 @@ export const CategoryFormModal = ({
                     alt="Preview"
                     fill
                     className="object-cover"
+                    unoptimized={skipImageOptimization(preview)}
                   />
                   {uploading && (
                     <div className="absolute inset-0 bg-black/40 flex items-center justify-center">

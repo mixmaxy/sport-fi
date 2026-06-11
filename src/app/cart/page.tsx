@@ -21,7 +21,7 @@ import {
 } from "@/shared/utils/helper";
 import {
   getActivityImageUrl,
-  isLocalPlaceholderImage,
+  skipImageOptimization,
 } from "@/shared/utils/images";
 
 export default function CartPage() {
@@ -90,12 +90,20 @@ export default function CartPage() {
                 <div className="flex gap-4">
                   <div className="relative h-24 w-24 shrink-0 overflow-hidden rounded-lg bg-surface-container-low">
                     <Image
-                      src={getActivityImageUrl(activity.imageUrls)}
+                      src={getActivityImageUrl(
+                        activity.imageUrls,
+                        0,
+                        activity.id,
+                      )}
                       alt={activity.title}
                       fill
                       className="object-cover"
-                      unoptimized={isLocalPlaceholderImage(
-                        getActivityImageUrl(activity.imageUrls),
+                      unoptimized={skipImageOptimization(
+                        getActivityImageUrl(
+                          activity.imageUrls,
+                          0,
+                          activity.id,
+                        ),
                       )}
                     />
                   </div>
