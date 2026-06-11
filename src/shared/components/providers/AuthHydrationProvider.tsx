@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
+import { getCurrentUser } from "@/features/auth/lib/auth.client";
 import { useAuthStore } from "@/store/useAuthStore";
 import type { User } from "@/shared/types";
 
@@ -26,6 +27,31 @@ function syncTokenToLegacyKey() {
   const { token, isAuthenticated } = useAuthStore.getState();
   if (!isAuthenticated || !token || typeof window === "undefined") return;
   localStorage.setItem("auth_token", token);
+}
+
+function AuthSessionSync() {
+  const { hasHydrated, isAuthenticated, user, updateUser, logout } =
+    useAuthStore();
+
+  useEffect(() => {
+    if (!hasHydrated || !isAuthenticated || user?.role) return;
+
+    let cancelled = false;
+
+    void getCurrentUser()
+      .then((me) => {
+        if (!cancelled) updateUser(me);
+      })
+      .catch(() => {
+        if (!cancelled) logout();
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [hasHydrated, isAuthenticated, user?.role, updateUser, logout]);
+
+  return null;
 }
 
 export function AuthHydrationProvider({
@@ -61,5 +87,10 @@ export function AuthHydrationProvider({
     };
   }, []);
 
-  return <>{children}</>;
+  return (
+    <>
+      <AuthSessionSync />
+      {children}
+    </>
+  );
 }

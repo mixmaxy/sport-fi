@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect } from "react";
-import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
@@ -57,20 +56,10 @@ function MeProfileCard({ user }: { user: User }) {
     <Card>
       <CardBody className="p-6 sm:p-8">
         <div className="mb-8 flex flex-col items-center gap-4 sm:flex-row sm:items-start">
-          <div className="relative h-24 w-24 shrink-0 overflow-hidden rounded-full bg-primary-container">
-            {user.profilePictureUrl ? (
-              <Image
-                src={user.profilePictureUrl}
-                alt={user.name}
-                fill
-                className="object-cover"
-                unoptimized
-              />
-            ) : (
-              <span className="flex h-full w-full items-center justify-center text-2xl font-bold text-on-primary">
-                {getInitials(user.name)}
-              </span>
-            )}
+          <div className="relative flex h-24 w-24 shrink-0 items-center justify-center overflow-hidden rounded-full bg-primary-container">
+            <span className="text-2xl font-bold text-on-primary">
+              {getInitials(user.name)}
+            </span>
           </div>
           <div className="text-center sm:text-left">
             <h2 className="text-2xl font-bold text-on-surface">{user.name}</h2>

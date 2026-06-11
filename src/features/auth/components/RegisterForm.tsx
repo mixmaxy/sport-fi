@@ -33,13 +33,17 @@ const registerSchema = z
       ),
     password: z
       .string()
+      .trim()
       .min(1, "Password wajib diisi")
       .min(6, "Password minimal 6 karakter")
       .max(50, "Password maksimal 50 karakter"),
-    passwordRepeat: z.string().min(1, "Konfirmasi password wajib diisi"),
+    passwordRepeat: z
+      .string()
+      .trim()
+      .min(1, "Konfirmasi password wajib diisi"),
   })
   .refine((data) => data.password === data.passwordRepeat, {
-    message: "Password tidak cocok",
+    message: "Konfirmasi password harus sama dengan password",
     path: ["passwordRepeat"],
   });
 
@@ -58,7 +62,8 @@ export const RegisterForm = () => {
     formState: { errors },
   } = useForm<RegisterFormData>({
     resolver: zodResolver(registerSchema),
-    mode: "onBlur",
+    mode: "onSubmit",
+    reValidateMode: "onChange",
   });
 
   const onSubmit = (data: RegisterFormData) => {
