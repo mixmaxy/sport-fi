@@ -3,14 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import {
-  Menu,
-  X,
-  ShoppingCart,
-  LogOut,
-  LayoutDashboard,
-  Shield,
-} from "lucide-react";
+import { Menu, X, ShoppingCart, LogOut, Shield } from "lucide-react";
 import { useAuthStore } from "@/store/useAuthStore";
 import { useCartStore, selectCartTotalItems } from "@/store/useCartStore";
 import { useLogout } from "@/features/auth/hooks/useAuthMutations";
@@ -25,6 +18,11 @@ const navLinks = [
     label: "Venues",
     match: (path: string) =>
       path === "/activities" || path.startsWith("/activities/"),
+  },
+  {
+    href: "/categories",
+    label: "Categories",
+    match: (path: string) => path.startsWith("/categories"),
   },
   {
     href: "/dashboard",
@@ -88,10 +86,10 @@ export const Navbar = () => {
                 key={link.href}
                 href={link.href}
                 className={cn(
-                  "text-sm font-semibold tracking-wide transition-colors duration-200",
+                  "inline-flex h-9 items-center border-b-2 text-sm font-semibold tracking-wide transition-colors duration-200",
                   active
-                    ? "border-b-2 border-primary pb-1 text-primary"
-                    : "text-on-surface-variant hover:text-primary",
+                    ? "border-primary text-primary"
+                    : "border-transparent text-on-surface-variant hover:text-primary",
                 )}
               >
                 {link.label}
@@ -165,7 +163,14 @@ export const Navbar = () => {
       </div>
 
       {isMobileMenuOpen && (
-        <div className="border-t border-outline-variant bg-background/95 backdrop-blur-md md:hidden">
+        <>
+          <button
+            type="button"
+            className="fixed inset-0 top-20 z-40 bg-black/30 md:hidden"
+            aria-label="Tutup menu"
+            onClick={closeMobile}
+          />
+          <div className="relative z-50 border-t border-outline-variant bg-background/95 backdrop-blur-md md:hidden">
           <div className="space-y-1 px-4 py-4">
             {visibleNavLinks.map((link) => {
               const active = link.match(pathname);
@@ -185,14 +190,6 @@ export const Navbar = () => {
                 </Link>
               );
             })}
-
-            <Link
-              href="/categories"
-              onClick={closeMobile}
-              className="block rounded-lg px-3 py-2.5 text-base font-medium text-on-surface-variant hover:bg-surface-container-low"
-            >
-              Categories
-            </Link>
 
             <Link
               href="/cart"
@@ -222,14 +219,6 @@ export const Navbar = () => {
                     Admin Panel
                   </Link>
                 )}
-                <Link
-                  href="/dashboard"
-                  onClick={closeMobile}
-                  className="flex items-center gap-2 rounded-lg px-3 py-2.5 font-medium text-on-surface-variant hover:bg-surface-container-low"
-                >
-                  <LayoutDashboard className="h-5 w-5" />
-                  Dashboard
-                </Link>
                 <button
                   type="button"
                   onClick={handleLogout}
@@ -264,6 +253,7 @@ export const Navbar = () => {
             )}
           </div>
         </div>
+        </>
       )}
     </header>
   );

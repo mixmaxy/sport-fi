@@ -67,10 +67,7 @@ export default function TransactionDetailPage() {
 
   if (isLoading) {
     return (
-      <PageShell
-        narrow
-        className="flex min-h-[60vh] items-center justify-center"
-      >
+      <PageShell narrow centered>
         <Loader2 className="h-8 w-8 animate-spin text-primary" />
       </PageShell>
     );
@@ -78,11 +75,8 @@ export default function TransactionDetailPage() {
 
   if (error || !tx) {
     return (
-      <PageShell
-        narrow
-        className="flex min-h-[60vh] items-center justify-center"
-      >
-        <div className="text-center space-y-4">
+      <PageShell narrow centered>
+        <div className="space-y-4">
           <AlertCircle className="mx-auto h-12 w-12 text-red-500" />
           <p className="font-semibold text-on-surface">
             Transaksi tidak ditemukan
@@ -96,8 +90,8 @@ export default function TransactionDetailPage() {
   }
 
   return (
-    <PageShell narrow className="pb-16">
-      <div className="mb-6 flex items-center justify-between gap-4">
+    <PageShell narrow>
+      <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
         <div>
           <h1 className="text-2xl font-bold text-on-surface">
             Detail Transaksi
@@ -108,7 +102,7 @@ export default function TransactionDetailPage() {
         </div>
         <span
           className={cn(
-            "rounded-full px-3 py-1 text-xs font-semibold",
+            "shrink-0 self-start rounded-full px-3 py-1 text-xs font-semibold sm:self-auto",
             getStatusColor(tx.status),
           )}
         >

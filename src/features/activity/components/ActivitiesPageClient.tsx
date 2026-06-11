@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import {
   ChevronLeft,
   ChevronRight,
@@ -16,6 +16,8 @@ import {
 import { useActivitiesList } from "@/features/activity/hooks/useActivitiesList";
 import { normalizeActivitiesPage } from "@/features/activity/lib/activities.client";
 import type { GetActivitiesParams } from "@/features/activity/lib/activities.server";
+import { PageShell } from "@/shared/components/layout/PageShell";
+import { cn } from "@/shared/utils/cn";
 import type { Province, SportActivity, SportCategory } from "@/shared/types";
 
 interface ActivitiesPageClientProps {
@@ -40,6 +42,7 @@ export function ActivitiesPageClient({
     cityId: initialFilters?.cityId ?? "",
   });
   const [page, setPage] = useState(1);
+  const listSectionRef = useRef<HTMLElement>(null);
 
   const [apiParams, setApiParams] = useState<GetActivitiesParams>(() => ({
     sportCategoryId: initialFilters?.sportCategoryId,
@@ -69,6 +72,7 @@ export function ActivitiesPageClient({
   const {
     data: fetchedActivities,
     isLoading,
+    isValidating,
     isError,
   } = useActivitiesList(apiParams, true);
 
@@ -76,8 +80,14 @@ export function ActivitiesPageClient({
   const hasActiveFilters =
     !!filters.categoryId || !!filters.cityId || !!filters.search;
 
+  const isInitialLoad = isLoading && fetchedActivities == null;
+  const isPageFetching = isValidating && !isInitialLoad;
+
   const activities =
-    pageData?.data ?? (hasActiveFilters ? [] : initialActivities);
+    pageData?.data ??
+    (page === 1 && !hasActiveFilters
+      ? initialActivities.slice(0, pageSize)
+      : []);
 
   const currentPage = pageData?.current_page ?? page;
   const lastPage = pageData?.last_page ?? 1;
@@ -89,11 +99,16 @@ export function ActivitiesPageClient({
     setPage(1);
   }, []);
 
-  const showLoading = isLoading;
+  const handlePageChange = useCallback((nextPage: number) => {
+    setPage(nextPage);
+    listSectionRef.current?.scrollIntoView({
+      behavior: "smooth",
+      block: "start",
+    });
+  }, []);
 
   return (
-    <div className="min-h-screen bg-background pb-20">
-      <div className="mx-auto max-w-7xl px-4 pt-8 sm:px-6 lg:px-10">
+    <PageShell>
         <header className="mb-6 flex flex-col justify-between gap-4 md:mb-8 md:flex-row md:items-end">
           <div>
             <h1 className="text-3xl font-bold tracking-tight text-on-surface">
@@ -121,7 +136,7 @@ export function ActivitiesPageClient({
           </div>
         </header>
 
-        <div className="flex flex-col gap-6 lg:flex-row lg:gap-6">
+        <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:gap-6">
           <section aria-label="Filter aktivitas">
             <ActivityFilters
               categories={categories}
@@ -131,8 +146,12 @@ export function ActivitiesPageClient({
             />
           </section>
 
-          <section aria-label="Daftar aktivitas" className="min-w-0 flex-1">
-            {showLoading ? (
+          <section
+            ref={listSectionRef}
+            aria-label="Daftar aktivitas"
+            className="min-w-0 flex-1 scroll-mt-24"
+          >
+            {isInitialLoad ? (
               <div className="flex flex-col items-center justify-center gap-4 py-24">
                 <Loader2 className="h-10 w-10 animate-spin text-primary" />
                 <p className="text-on-surface-variant">Memuat aktivitas...</p>
@@ -158,11 +177,21 @@ export function ActivitiesPageClient({
                 </p>
               </div>
             ) : (
-              <>
+              <div
+                className={cn(
+                  "relative transition-opacity",
+                  isPageFetching && "pointer-events-none opacity-60",
+                )}
+              >
+                {isPageFetching && (
+                  <div className="absolute inset-x-0 top-0 z-10 flex justify-center pt-8">
+                    <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                  </div>
+                )}
                 <p className="mb-6 text-sm text-on-surface-variant">
                   Menampilkan <strong>{filtered.length}</strong> aktivitas
                 </p>
-                <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+                <div className="grid grid-cols-1 items-start gap-6 md:grid-cols-2">
                   {filtered.map((activity, idx) => (
                     <ActivityCard
                       key={activity.id}
@@ -172,11 +201,13 @@ export function ActivitiesPageClient({
                   ))}
                 </div>
 
-                <div className="mt-10 flex items-center justify-between gap-4">
+                <div className="mt-10 flex flex-col items-center gap-3 sm:flex-row sm:justify-between sm:gap-4">
                   <button
                     type="button"
-                    onClick={() => setPage((p) => Math.max(1, p - 1))}
-                    disabled={currentPage <= 1}
+                    onClick={() =>
+                      handlePageChange(Math.max(1, currentPage - 1))
+                    }
+                    disabled={currentPage <= 1 || isPageFetching}
                     className="inline-flex items-center gap-2 rounded-xl border border-outline-variant bg-surface-container-lowest px-4 py-3 text-sm font-bold text-on-surface transition-colors hover:bg-surface-container-low disabled:cursor-not-allowed disabled:opacity-50"
                   >
                     <ChevronLeft className="h-5 w-5" />
@@ -189,19 +220,18 @@ export function ActivitiesPageClient({
                   </p>
                   <button
                     type="button"
-                    onClick={() => setPage((p) => p + 1)}
-                    disabled={currentPage >= lastPage}
+                    onClick={() => handlePageChange(currentPage + 1)}
+                    disabled={currentPage >= lastPage || isPageFetching}
                     className="inline-flex items-center gap-2 rounded-xl border border-outline-variant bg-surface-container-lowest px-4 py-3 text-sm font-bold text-on-surface transition-colors hover:bg-surface-container-low disabled:cursor-not-allowed disabled:opacity-50"
                   >
                     Next
                     <ChevronRight className="h-5 w-5" />
                   </button>
                 </div>
-              </>
+              </div>
             )}
           </section>
         </div>
-      </div>
-    </div>
+    </PageShell>
   );
 }

@@ -87,7 +87,7 @@ export function HeroSearchBar({ categories, provinces }: HeroSearchBarProps) {
       onSubmit={handleSearch}
       className="mx-auto w-full max-w-5xl rounded-2xl bg-white p-4 shadow-2xl md:bg-white/95 md:backdrop-blur-md"
     >
-      <div className="flex flex-col gap-3 md:flex-row md:items-stretch">
+      <div className="flex flex-col gap-3 md:flex-row md:items-stretch md:gap-3">
         <FieldShell
           icon={<MapPin className="h-5 w-5" />}
           label="Provinsi"
@@ -155,11 +155,11 @@ export function HeroSearchBar({ categories, provinces }: HeroSearchBarProps) {
           </select>
         </FieldShell>
 
-        <div className="flex md:min-w-[152px] md:max-w-[180px] md:flex-col md:justify-end">
+        <div className="flex md:min-w-[152px] md:max-w-[180px] md:self-stretch">
           <Button
             type="submit"
             size="lg"
-            className="h-12 w-full gap-2 rounded-xl text-base font-bold tracking-wide md:h-full md:min-h-12"
+            className="h-12 w-full gap-2 rounded-xl text-base font-bold tracking-wide md:h-full md:min-h-[88px]"
             leftIcon={<Search className="h-5 w-5" />}
           >
             Cari Venue

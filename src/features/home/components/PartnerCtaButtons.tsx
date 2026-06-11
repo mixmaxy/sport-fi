@@ -35,7 +35,7 @@ export function PartnerCtaButtons() {
         <Button
           variant="outline"
           size="lg"
-          className="border-white/30 px-8 text-white uppercase tracking-widest hover:border-white/50 hover:bg-white/10"
+          className="border-white/30 bg-transparent px-8 text-white uppercase tracking-widest hover:border-white/50 hover:bg-white/10 hover:text-white"
         >
           Learn More
         </Button>
