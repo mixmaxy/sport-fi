@@ -3,8 +3,12 @@
 import { useEffect } from "react";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
-import { AlertCircle, Loader2 } from "lucide-react";
+import { AlertCircle, Loader2, Trash2 } from "lucide-react";
 import { useAuthStore } from "@/store/useAuthStore";
+import {
+  isRemovableTransactionStatus,
+  useHiddenTransactionsStore,
+} from "@/store/useHiddenTransactionsStore";
 import { Button } from "@/shared/components/ui/Button";
 import { PageShell } from "@/shared/components/layout/PageShell";
 import { getTransactionById } from "@/features/transaction/lib/transactions.client";
@@ -13,9 +17,11 @@ import {
   formatCurrency,
   formatDate,
   getStatusColor,
+  getStatusLabel,
 } from "@/shared/utils/helper";
 import { cn } from "@/shared/utils/cn";
 import { ProofPaymentUpload } from "@/features/transaction/components/ProofPaymentUpload";
+import { toast } from "sonner";
 
 export default function TransactionDetailPage() {
   const router = useRouter();
@@ -27,6 +33,9 @@ export default function TransactionDetailPage() {
   }, [isAuthenticated, router]);
 
   const txId = params?.id;
+  const hideTransaction = useHiddenTransactionsStore(
+    (state) => state.hideTransaction,
+  );
   const {
     data: tx,
     isLoading,
@@ -37,6 +46,22 @@ export default function TransactionDetailPage() {
     () => getTransactionById(txId),
     { revalidateOnFocus: false, shouldRetryOnError: false },
   );
+
+  const canRemove = tx ? isRemovableTransactionStatus(tx.status) : false;
+
+  const handleRemoveFromList = () => {
+    if (!tx) return;
+    if (
+      !confirm(
+        "Hapus pesanan ini dari daftar? Riwayat tidak akan tampil lagi di dashboard.",
+      )
+    ) {
+      return;
+    }
+    hideTransaction(tx.id);
+    toast.success("Pesanan dihapus dari daftar.");
+    router.push("/dashboard");
+  };
 
   if (!isAuthenticated) return null;
 
@@ -87,7 +112,7 @@ export default function TransactionDetailPage() {
             getStatusColor(tx.status),
           )}
         >
-          {tx.status}
+          {getStatusLabel(tx.status)}
         </span>
       </div>
 
@@ -121,7 +146,16 @@ export default function TransactionDetailPage() {
           )}
         </div>
 
-        <div className="mt-6 flex justify-end">
+        <div className="mt-6 flex flex-wrap justify-end gap-2">
+          {canRemove && (
+            <Button
+              variant="danger"
+              leftIcon={<Trash2 className="h-4 w-4" />}
+              onClick={handleRemoveFromList}
+            >
+              Hapus dari Daftar
+            </Button>
+          )}
           <Link href="/dashboard">
             <Button variant="outline">Kembali ke My Bookings</Button>
           </Link>

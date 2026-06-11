@@ -11,33 +11,46 @@ import {
   ChevronUp,
   ExternalLink,
   Loader2,
+  Trash2,
 } from "lucide-react";
 import {
   useMyTransactions,
   useCancelTransaction,
 } from "@/features/transaction/hooks/useTransactions";
+import {
+  isRemovableTransactionStatus,
+  useHiddenTransactionsStore,
+} from "@/store/useHiddenTransactionsStore";
 import { ProofPaymentUpload } from "./ProofPaymentUpload";
 import { Card, CardBody } from "@/shared/components/ui/Card";
+import { ExternalImage } from "@/shared/components/ui/ExternalImage";
 import { Button } from "@/shared/components/ui/Button";
 import {
   formatCurrency,
   formatDate,
+  formatTimeSlot,
   getStatusColor,
 } from "@/shared/utils/helper";
 import { cn } from "@/shared/utils/cn";
 import { getErrorMessage } from "@/shared/config/api";
+import {
+  getActivityImageUrl,
+  skipImageOptimization,
+} from "@/shared/utils/images";
 import { toast } from "sonner";
 
 const statusIcons = {
   pending: <Clock className="w-4 h-4" />,
   success: <CheckCircle2 className="w-4 h-4" />,
   cancelled: <XCircle className="w-4 h-4" />,
+  failed: <XCircle className="w-4 h-4" />,
 };
 
 const statusLabels: Record<string, string> = {
   pending: "Menunggu",
   success: "Berhasil",
   cancelled: "Dibatalkan",
+  failed: "Ditolak",
 };
 
 export const TransactionList = () => {
@@ -48,7 +61,12 @@ export const TransactionList = () => {
     refetch,
   } = useMyTransactions();
   const { mutate: cancel, isPending: cancelling } = useCancelTransaction();
+  const hideTransaction = useHiddenTransactionsStore(
+    (state) => state.hideTransaction,
+  );
+  const hiddenIds = useHiddenTransactionsStore((state) => state.hiddenIds);
   const [expandedId, setExpandedId] = useState<string | null>(null);
+  const [removingId, setRemovingId] = useState<string | null>(null);
 
   if (isLoading) {
     return (
@@ -81,11 +99,66 @@ export const TransactionList = () => {
     );
   }
 
+  const visibleTransactions = transactions.filter(
+    (tx) => !hiddenIds.includes(tx.id),
+  );
+
+  if (visibleTransactions.length === 0) {
+    return (
+      <div className="text-center py-16">
+        <Clock className="mx-auto mb-4 h-14 w-14 text-outline-variant" />
+        <p className="font-medium text-on-surface">Belum ada transaksi</p>
+        <p className="mb-6 text-sm text-on-surface-variant">
+          Pesanan yang dibatalkan sudah dihapus dari daftar.
+        </p>
+        <Link href="/activities">
+          <Button>Mulai Pesan</Button>
+        </Link>
+      </div>
+    );
+  }
+
+  const handleRemoveFromList = (transactionId: string) => {
+    if (
+      !confirm(
+        "Hapus pesanan ini dari daftar? Riwayat tidak akan tampil lagi di dashboard.",
+      )
+    ) {
+      return;
+    }
+
+    setRemovingId(transactionId);
+    hideTransaction(transactionId);
+    if (expandedId === transactionId) {
+      setExpandedId(null);
+    }
+    setRemovingId(null);
+    toast.success("Pesanan dihapus dari daftar.");
+  };
+
   return (
     <div className="space-y-4">
-      {transactions.map((tx) => {
+      {visibleTransactions.map((tx) => {
         const isExpanded = expandedId === tx.id;
-        const status = tx.status as "pending" | "success" | "cancelled";
+        const status = tx.status as "pending" | "success" | "cancelled" | "failed";
+        const canRemove = isRemovableTransactionStatus(status);
+        const firstItem = tx.items?.[0];
+        const activity = firstItem?.sportActivity;
+        const activityImage = getActivityImageUrl(
+          activity?.imageUrls,
+          0,
+          activity?.id,
+        );
+        const sessionTime = formatTimeSlot(
+          activity?.startTime,
+          activity?.endTime,
+        );
+        const sessionDate = activity?.activityDate ?? tx.createdAt;
+        const metaParts = [
+          firstItem?.quantity ? `${firstItem.quantity} sesi` : null,
+          sessionTime,
+          sessionDate ? formatDate(sessionDate) : null,
+        ].filter(Boolean);
 
         return (
           <Card key={tx.id}>
@@ -94,25 +167,24 @@ export const TransactionList = () => {
               <div className="flex items-start justify-between gap-4">
                 <div className="flex items-start gap-4 flex-1 min-w-0">
                   {/* Activity Image */}
-                  {tx.items?.[0]?.sportActivity?.imageUrls?.[0] && (
+                  {activity && (
                     <div className="relative h-16 w-16 shrink-0 overflow-hidden rounded-lg bg-surface-container-low">
                       <Image
-                        src={tx.items[0].sportActivity.imageUrls[0]}
-                        alt={tx.items[0].sportActivity.title || ""}
+                        src={activityImage}
+                        alt={activity.title || ""}
                         fill
                         className="object-cover"
+                        unoptimized={skipImageOptimization(activityImage)}
                       />
                     </div>
                   )}
 
                   <div className="flex-1 min-w-0">
                     <p className="truncate font-semibold text-on-surface">
-                      {tx.items?.[0]?.sportActivity?.title ||
-                        "Aktivitas tidak tersedia"}
+                      {activity?.title || "Aktivitas tidak tersedia"}
                     </p>
                     <p className="mt-0.5 text-sm text-on-surface-variant">
-                      {tx.items?.[0]?.quantity} sesi ·{" "}
-                      {formatDate(tx.createdAt)}
+                      {metaParts.join(" · ")}
                     </p>
                     <p className="mt-1 text-sm font-semibold text-primary">
                       {formatCurrency(tx.totalAmount)}
@@ -128,8 +200,8 @@ export const TransactionList = () => {
                       getStatusColor(status),
                     )}
                   >
-                    {statusIcons[status]}
-                    {statusLabels[status]}
+                    {statusIcons[status] ?? statusIcons.pending}
+                    {statusLabels[status] ?? status}
                   </span>
 
                   <Link href={`/transactions/${tx.id}`}>
@@ -142,6 +214,19 @@ export const TransactionList = () => {
                       Lihat detail
                     </Button>
                   </Link>
+
+                  {canRemove && (
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="border-red-200 text-red-600 hover:bg-red-50"
+                      leftIcon={<Trash2 className="h-3.5 w-3.5" />}
+                      isLoading={removingId === tx.id}
+                      onClick={() => handleRemoveFromList(tx.id)}
+                    >
+                      Hapus
+                    </Button>
+                  )}
 
                   {/* Expand Toggle */}
                   <button
@@ -197,11 +282,11 @@ export const TransactionList = () => {
                       </p>
                       {tx.proofPaymentUrl ? (
                         <div className="relative h-32 w-48 overflow-hidden rounded-lg border border-outline-variant">
-                          <Image
+                          <ExternalImage
                             src={tx.proofPaymentUrl}
                             alt="Bukti pembayaran"
                             fill
-                            className="object-cover"
+                            className="object-contain"
                           />
                         </div>
                       ) : (
@@ -247,6 +332,18 @@ export const TransactionList = () => {
                         }}
                       >
                         Batalkan Pesanan
+                      </Button>
+                    )}
+
+                    {canRemove && (
+                      <Button
+                        variant="danger"
+                        size="sm"
+                        leftIcon={<Trash2 className="h-3.5 w-3.5" />}
+                        isLoading={removingId === tx.id}
+                        onClick={() => handleRemoveFromList(tx.id)}
+                      >
+                        Hapus dari Daftar
                       </Button>
                     )}
                   </div>

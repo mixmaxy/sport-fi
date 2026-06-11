@@ -9,6 +9,7 @@ import {
 } from "@/features/file/hooks/useUploadImage";
 import { useUpdateProofPayment } from "@/features/transaction/hooks/useTransactions";
 import { Button } from "@/shared/components/ui/Button";
+import { getErrorMessage } from "@/shared/config/api";
 import { toast } from "sonner";
 
 interface ProofPaymentUploadProps {
@@ -65,10 +66,14 @@ export const ProofPaymentUpload = ({
       await updateProof({ transactionId, proofPaymentUrl: imageUrl });
 
       setDone(true);
-      toast.success("Bukti pembayaran berhasil diunggah!");
+      toast.success(
+        "Bukti pembayaran berhasil diunggah! Menunggu verifikasi admin.",
+      );
       onSuccess?.();
-    } catch {
-      const message = "Gagal mengunggah bukti pembayaran. Silakan coba lagi.";
+    } catch (err) {
+      const message =
+        getErrorMessage(err) ||
+        "Gagal mengunggah bukti pembayaran. Silakan coba lagi.";
       setFileError(message);
       toast.error(message);
     }
@@ -76,9 +81,16 @@ export const ProofPaymentUpload = ({
 
   if (done) {
     return (
-      <div className="flex items-center gap-2 text-green-600 text-sm font-medium">
-        <CheckCircle2 className="w-5 h-5" />
-        Bukti pembayaran berhasil diunggah
+      <div className="space-y-2 rounded-lg border border-green-200 bg-green-50 p-4 text-sm text-green-800">
+        <div className="flex items-center gap-2 font-medium">
+          <CheckCircle2 className="h-5 w-5 shrink-0" />
+          Bukti pembayaran berhasil diunggah
+        </div>
+        <p className="text-green-700">
+          Status masih <strong>Menunggu</strong> sampai admin memverifikasi
+          pembayaran. Setelah disetujui, status akan berubah menjadi{" "}
+          <strong>Berhasil</strong>.
+        </p>
       </div>
     );
   }
