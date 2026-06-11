@@ -27,10 +27,7 @@ export default function DashboardPage() {
 
   if (!hasHydrated || isRestoring || (isAuthenticated && !user)) {
     return (
-      <PageShell
-        narrow
-        className="flex min-h-[60vh] flex-col items-center justify-center gap-3"
-      >
+      <PageShell narrow centered contentClassName="gap-3">
         <Loader2 className="h-8 w-8 animate-spin text-primary" />
         <p className="text-sm text-on-surface-variant">Memuat data akun…</p>
       </PageShell>
@@ -39,10 +36,7 @@ export default function DashboardPage() {
 
   if (!isReady || !user) {
     return (
-      <PageShell
-        narrow
-        className="flex min-h-[60vh] flex-col items-center justify-center gap-3"
-      >
+      <PageShell narrow centered contentClassName="gap-3">
         <Loader2 className="h-8 w-8 animate-spin text-primary" />
         <p className="text-sm text-on-surface-variant">
           Mengalihkan ke halaman login…
@@ -65,7 +59,7 @@ export default function DashboardPage() {
   ];
 
   return (
-    <PageShell className="pb-16">
+    <PageShell>
       <div className="flex flex-col gap-8 lg:flex-row">
         <aside className="hidden w-64 shrink-0 lg:block">
           <div className="sticky top-24 rounded-xl border border-outline-variant bg-surface-container-lowest p-4 shadow-sm">
@@ -103,7 +97,7 @@ export default function DashboardPage() {
         <section className="min-w-0 flex-1">
           <header className="mb-8">
             <h1 className="text-3xl font-bold tracking-tight text-on-surface">
-              My Bookings
+              {activeTab === "profile" ? "Profile Settings" : "My Bookings"}
             </h1>
             <p className="mt-1 text-on-surface-variant">
               Welcome back, <strong>{user.name}</strong>

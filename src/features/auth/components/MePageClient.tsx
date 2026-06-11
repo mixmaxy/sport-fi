@@ -135,10 +135,7 @@ export function MePageClient() {
 
   if (!hasHydrated || isRestoring) {
     return (
-      <PageShell
-        narrow
-        className="flex min-h-[60vh] flex-col items-center justify-center gap-3"
-      >
+      <PageShell narrow centered contentClassName="gap-3">
         <Loader2 className="h-8 w-8 animate-spin text-primary" />
         <p className="text-sm text-on-surface-variant">Memuat sesi…</p>
       </PageShell>
@@ -147,10 +144,7 @@ export function MePageClient() {
 
   if (!isAuthenticated) {
     return (
-      <PageShell
-        narrow
-        className="flex min-h-[60vh] flex-col items-center justify-center gap-4 text-center"
-      >
+      <PageShell narrow centered contentClassName="gap-4">
         <p className="text-on-surface-variant">Silakan login untuk melihat profil.</p>
         <Link href="/login">
           <Button>Login</Button>
@@ -160,10 +154,10 @@ export function MePageClient() {
   }
 
   return (
-    <PageShell narrow className="pb-16">
+    <PageShell narrow>
       <header className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div>
-          <h1 className="mt-1 text-3xl font-bold tracking-tight text-on-surface">
+          <h1 className="text-3xl font-bold tracking-tight text-on-surface">
             Profil Saya
           </h1>
         </div>

@@ -61,7 +61,7 @@ export function AuthLayout({ children, title, subtitle }: AuthLayoutProps) {
         </div>
       </section>
 
-      <section className="flex w-full flex-col justify-center bg-background px-4 py-12 sm:px-8 lg:w-1/2 xl:w-5/12">
+      <section className="flex w-full max-h-screen flex-col justify-center overflow-y-auto bg-background px-4 py-12 sm:px-8 lg:max-h-none lg:w-1/2 xl:w-5/12">
         <div className="mx-auto w-full max-w-md">
           <div className="mb-8 lg:hidden">
             <Link href="/" className="text-xl font-extrabold text-primary">

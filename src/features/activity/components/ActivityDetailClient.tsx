@@ -24,6 +24,7 @@ import {
   skipImageOptimization,
 } from "@/shared/utils/images";
 import { toast } from "sonner";
+import { cn } from "@/shared/utils/cn";
 import type { SportActivity } from "@/shared/types";
 
 interface ActivityDetailClientProps {
@@ -66,8 +67,8 @@ export function ActivityDetailClient({ activity }: ActivityDetailClientProps) {
     : [getActivityImageUrl(null, 0, activity.id)];
 
   return (
-    <div className="min-h-screen bg-background pb-12">
-      <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-10">
+    <div className="min-h-screen bg-background">
+      <div className="mx-auto max-w-7xl px-4 py-8 pb-16 sm:px-6 lg:px-10">
         <nav
           aria-label="Breadcrumb"
           className="mb-4 flex flex-wrap items-center gap-2 text-sm text-on-surface-variant"
@@ -253,8 +254,11 @@ export function ActivityDetailClient({ activity }: ActivityDetailClientProps) {
               <Button
                 fullWidth
                 size="lg"
-                variant={added ? "secondary" : "primary"}
-                className="font-bold"
+                variant="primary"
+                className={cn(
+                  "font-bold",
+                  added && "bg-green-600 text-white hover:brightness-110",
+                )}
                 leftIcon={
                   added ? (
                     <CheckCircle2 className="h-5 w-5" />

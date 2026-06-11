@@ -127,18 +127,17 @@ export const CategoryFormModal = ({
   return (
     /* Backdrop */
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50"
+      className="fixed inset-0 z-50 flex items-end justify-center overflow-y-auto bg-black/50 p-4 sm:items-center"
       onClick={(e) => e.target === e.currentTarget && onClose()}
     >
-      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md">
-        {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200">
-          <h2 className="text-lg font-semibold text-gray-900">
+      <div className="mb-0 w-full max-w-md rounded-t-2xl border border-outline-variant bg-surface-container-lowest shadow-2xl sm:mb-auto sm:rounded-2xl">
+        <div className="flex items-center justify-between border-b border-outline-variant px-6 py-4">
+          <h2 className="text-lg font-semibold text-on-surface">
             {isEditing ? "Edit Kategori" : "Tambah Kategori"}
           </h2>
           <button
             onClick={onClose}
-            className="p-2 hover:bg-gray-100 rounded-lg"
+            className="rounded-lg p-2 hover:bg-surface-container-low"
             aria-label="Tutup"
           >
             <X className="w-5 h-5" />
@@ -157,18 +156,18 @@ export const CategoryFormModal = ({
 
           {/* Image Upload */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1.5">
+            <label className="mb-1.5 block text-sm font-medium text-on-surface">
               Gambar Kategori{" "}
               {!isEditing && <span className="text-red-500">*</span>}
               {isEditing && (
-                <span className="text-gray-400 font-normal">
+                <span className="font-normal text-on-surface-variant">
                   (opsional, kosongkan jika tidak diubah)
                 </span>
               )}
             </label>
             <div
               onClick={() => inputRef.current?.click()}
-              className="border-2 border-dashed border-gray-300 hover:border-blue-400 rounded-xl p-4 cursor-pointer transition-colors"
+              className="cursor-pointer rounded-xl border-2 border-dashed border-outline-variant p-4 transition-colors hover:border-primary"
             >
               {preview ? (
                 <div className="relative h-36 rounded-lg overflow-hidden">
@@ -187,11 +186,11 @@ export const CategoryFormModal = ({
                 </div>
               ) : (
                 <div className="text-center py-6">
-                  <Upload className="w-8 h-8 text-gray-400 mx-auto mb-2" />
-                  <p className="text-sm text-gray-600">
+                  <Upload className="mx-auto mb-2 h-8 w-8 text-on-surface-variant" />
+                  <p className="text-sm text-on-surface-variant">
                     Klik untuk upload gambar
                   </p>
-                  <p className="text-xs text-gray-400 mt-1">
+                  <p className="mt-1 text-xs text-on-surface-variant/70">
                     JPG, PNG, WebP — maks 5MB
                   </p>
                 </div>

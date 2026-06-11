@@ -11,8 +11,8 @@ export const metadata: Metadata = {
 export default function LoginPage() {
   return (
     <AuthLayout
-      title="Welcome back"
-      subtitle="Sign in to manage your bookings and discover new venues."
+      title="Selamat datang kembali"
+      subtitle="Masuk untuk mengelola pemesanan dan menemukan venue olahraga favoritmu."
     >
       <LoginForm />
     </AuthLayout>

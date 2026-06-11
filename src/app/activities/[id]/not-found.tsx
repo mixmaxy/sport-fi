@@ -5,7 +5,7 @@ import { PageShell } from "@/shared/components/layout/PageShell";
 
 export default function ActivityNotFound() {
   return (
-    <PageShell narrow className="flex min-h-[60vh] items-center justify-center">
+    <PageShell narrow centered>
       <div className="max-w-sm space-y-4 text-center">
         <AlertCircle className="mx-auto h-14 w-14 text-red-500" />
         <h1 className="text-xl font-bold text-on-surface">Venue not found</h1>

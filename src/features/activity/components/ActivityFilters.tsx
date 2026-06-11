@@ -41,7 +41,7 @@ export function ActivityFilters({
 
   return (
     <aside className="w-full shrink-0 lg:w-72">
-      <div className="sticky top-24 rounded-xl border border-outline-variant bg-surface-container-low p-6">
+      <div className="sticky top-24 rounded-xl border border-outline-variant bg-surface-container-lowest p-6 shadow-sm">
         <div className="mb-6 flex items-center justify-between">
           <h2 className="text-xl font-bold text-on-surface">Filters</h2>
           {hasActiveFilters && (
@@ -67,7 +67,7 @@ export function ActivityFilters({
                 "rounded-full px-4 py-1.5 text-xs font-semibold transition-colors",
                 !filters.categoryId
                   ? "bg-primary text-on-primary"
-                  : "bg-[#d3e4fe] text-on-surface-variant hover:bg-[#cbdbf5]",
+                  : "bg-surface-container-low text-on-surface-variant hover:bg-primary-container/30",
               )}
             >
               All
@@ -81,7 +81,7 @@ export function ActivityFilters({
                   "rounded-full px-4 py-1.5 text-xs font-semibold transition-colors",
                   filters.categoryId === cat.id
                     ? "bg-primary text-on-primary"
-                    : "bg-[#d3e4fe] text-on-surface-variant hover:bg-[#cbdbf5]",
+                    : "bg-surface-container-low text-on-surface-variant hover:bg-primary-container/30",
                 )}
               >
                 {cat.name}
