@@ -7,6 +7,7 @@
   --primary-container: #2170e4;
   --on-primary: #ffffff;
   --surface-container-low: #eff4ff;
+  --surface-container-high: #dce9ff;
   --surface-container-lowest: #ffffff;
   --outline-variant: #c2c6d6;
   --on-surface: #0b1c30;
@@ -22,6 +23,7 @@
   --color-primary-container: var(--primary-container);
   --color-on-primary: var(--on-primary);
   --color-surface-container-low: var(--surface-container-low);
+  --color-surface-container-high: var(--surface-container-high);
   --color-surface-container-lowest: var(--surface-container-lowest);
   --color-outline-variant: var(--outline-variant);
   --color-on-surface: var(--on-surface);
@@ -81,4 +83,12 @@ html {
   background: linear-gradient(90deg, #eff4ff 25%, #dce9ff 50%, #eff4ff 75%);
   background-size: 1000px 100%;
   animation: shimmer 2s infinite;
+}
+
+.scrollbar-none {
+  scrollbar-width: none;
+}
+
+.scrollbar-none::-webkit-scrollbar {
+  display: none;
 }
