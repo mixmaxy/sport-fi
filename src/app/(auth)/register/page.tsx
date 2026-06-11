@@ -11,8 +11,8 @@ export const metadata: Metadata = {
 export default function RegisterPage() {
   return (
     <AuthLayout
-      title="Bergabung sekarang"
-      subtitle="Buat akun gratis dan mulai booking venue olahraga premium."
+      title="Join the game"
+      subtitle="Create your account and start booking premium sports venues."
     >
       <RegisterForm />
     </AuthLayout>

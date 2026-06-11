@@ -12,44 +12,6 @@ import type {
 } from "@/shared/types";
 import type { GetActivitiesParams } from "./activities.server";
 
-function toActivityApiPayload(activityData: CreateActivityRequest) {
-  const payload: Record<string, unknown> = {
-    sport_category_id: activityData.sportCategoryId,
-    city_id: activityData.cityId,
-    title: activityData.title,
-    description: activityData.description,
-    slot: activityData.slot,
-    price: activityData.price,
-    address: activityData.address,
-    activity_date: activityData.activityDate,
-    start_time: activityData.startTime,
-    end_time: activityData.endTime,
-    map_url: activityData.mapUrl ?? activityData.locationMap,
-  };
-
-  if (activityData.provinceId) {
-    payload.province_id = activityData.provinceId;
-  }
-
-  if (activityData.priceDiscount != null) {
-    payload.price_discount = activityData.priceDiscount;
-  }
-
-  if (activityData.facilities) {
-    payload.facilities = activityData.facilities;
-  }
-
-  if (activityData.imageUrls?.length) {
-    payload.image_urls = activityData.imageUrls;
-  }
-
-  if (activityData.locationMap) {
-    payload.location_map = activityData.locationMap;
-  }
-
-  return payload;
-}
-
 /** API unwrap may return a bare array or a paginated object. */
 export function normalizeActivitiesPage(
   raw: PaginatedResponse<SportActivity> | SportActivity[] | undefined,
@@ -103,20 +65,40 @@ export async function getActivityById(id: string): Promise<SportActivity> {
 export async function createActivity(
   activityData: CreateActivityRequest,
 ): Promise<SportActivity> {
-  return clientPost<SportActivity>(
-    "/sport-activities/create",
-    toActivityApiPayload(activityData),
-  );
+  const payload = {
+    sport_category_id: activityData.sportCategoryId,
+    city_id: activityData.cityId,
+    title: activityData.title,
+    description: activityData.description,
+    slot: activityData.slot,
+    price: activityData.price,
+    address: activityData.address,
+    activity_date: activityData.activityDate,
+    start_time: activityData.startTime,
+    end_time: activityData.endTime,
+    map_url: activityData.mapUrl ?? activityData.locationMap,
+  };
+  return clientPost<SportActivity>("/sport-activities/create", payload);
 }
 
 export async function updateActivity(
   payload: UpdateActivityRequest & { id: string },
 ): Promise<SportActivity> {
   const { id, ...activityData } = payload;
-  return clientPost<SportActivity>(
-    `/sport-activities/update/${id}`,
-    toActivityApiPayload(activityData),
-  );
+  const body = {
+    sport_category_id: activityData.sportCategoryId,
+    city_id: activityData.cityId,
+    title: activityData.title,
+    description: activityData.description,
+    slot: activityData.slot,
+    price: activityData.price,
+    address: activityData.address,
+    activity_date: activityData.activityDate,
+    start_time: activityData.startTime,
+    end_time: activityData.endTime,
+    map_url: activityData.mapUrl ?? activityData.locationMap,
+  };
+  return clientPost<SportActivity>(`/sport-activities/update/${id}`, body);
 }
 
 export async function deleteActivity(id: string): Promise<void> {

@@ -51,7 +51,7 @@ export const CardHeader = React.forwardRef<HTMLDivElement, CardHeaderProps>(
             <div
                 ref={ref}
                 className={cn(
-                    'px-6 py-4 border-b border-outline-variant',
+                    'px-6 py-4 border-b border-gray-200',
                     action && 'flex items-center justify-between',
                     className
                 )}
@@ -92,7 +92,7 @@ export const CardFooter = React.forwardRef<
     return (
         <div
             ref={ref}
-            className={cn('px-6 py-4 border-t border-outline-variant bg-surface-container-low', className)}
+            className={cn('px-6 py-4 border-t border-gray-200 bg-gray-50', className)}
             {...props}
         >
             {children}

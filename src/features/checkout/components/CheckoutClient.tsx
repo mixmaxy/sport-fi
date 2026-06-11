@@ -77,7 +77,10 @@ export function CheckoutClient({ paymentMethods }: CheckoutClientProps) {
 
   if (items.length === 0 && !success) {
     return (
-      <PageShell narrow centered contentClassName="gap-4">
+      <PageShell
+        narrow
+        className="flex min-h-[60vh] flex-col items-center justify-center gap-4 text-center"
+      >
         <p className="text-lg text-on-surface-variant">Keranjangmu kosong.</p>
         <Link href="/activities">
           <Button>Explore Venues</Button>
@@ -88,7 +91,10 @@ export function CheckoutClient({ paymentMethods }: CheckoutClientProps) {
 
   if (success) {
     return (
-      <PageShell narrow centered contentClassName="gap-4">
+      <PageShell
+        narrow
+        className="flex min-h-[60vh] flex-col items-center justify-center gap-4 text-center"
+      >
         <CheckCircle2 className="h-20 w-20 text-green-600" />
         <h1 className="text-2xl font-bold text-on-surface">
           Booking Confirmed!
@@ -105,7 +111,7 @@ export function CheckoutClient({ paymentMethods }: CheckoutClientProps) {
   }
 
   return (
-    <PageShell narrow>
+    <PageShell narrow className="pb-16">
       <div className="mb-8 flex flex-wrap items-center justify-between gap-4">
         <div>
           <h1 className="text-3xl font-bold tracking-tight text-on-surface">
@@ -121,8 +127,8 @@ export function CheckoutClient({ paymentMethods }: CheckoutClientProps) {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
-        <div className="space-y-6 lg:col-span-2">
+      <div className="grid grid-cols-1 gap-8 lg:grid-cols-5">
+        <div className="space-y-6 lg:col-span-3">
           <section className="rounded-xl border border-outline-variant bg-surface-container-lowest p-6 shadow-sm">
             <h2 className="mb-4 text-lg font-bold text-on-surface">
               Payment Method
@@ -174,7 +180,7 @@ export function CheckoutClient({ paymentMethods }: CheckoutClientProps) {
           </div>
         </div>
 
-        <aside className="lg:col-span-1">
+        <aside className="lg:col-span-2">
           <div className="sticky top-24 rounded-xl border border-outline-variant bg-surface-container-lowest p-6 shadow-sm">
             <h2 className="text-lg font-bold text-on-surface">Order Summary</h2>
 

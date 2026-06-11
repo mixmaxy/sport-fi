@@ -164,8 +164,8 @@ export const TransactionList = () => {
           <Card key={tx.id}>
             <CardBody className="p-4">
               {/* Header Row */}
-              <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-                <div className="flex min-w-0 flex-1 items-start gap-4">
+              <div className="flex items-start justify-between gap-4">
+                <div className="flex items-start gap-4 flex-1 min-w-0">
                   {/* Activity Image */}
                   {activity && (
                     <div className="relative h-16 w-16 shrink-0 overflow-hidden rounded-lg bg-surface-container-low">
@@ -192,7 +192,7 @@ export const TransactionList = () => {
                   </div>
                 </div>
 
-                <div className="flex w-full flex-col items-end gap-2 sm:w-auto">
+                <div className="flex flex-col items-end gap-2">
                   {/* Status Badge */}
                   <span
                     className={cn(
@@ -204,10 +204,7 @@ export const TransactionList = () => {
                     {statusLabels[status] ?? status}
                   </span>
 
-                  <Link
-                    href={`/transactions/${tx.id}`}
-                    className={cn(isExpanded && "hidden")}
-                  >
+                  <Link href={`/transactions/${tx.id}`}>
                     <Button
                       variant="outline"
                       size="sm"

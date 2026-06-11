@@ -80,32 +80,32 @@ export const LoginForm = () => {
           required
         />
 
-        <Input
-          {...register("password")}
-          type={showPassword ? "text" : "password"}
-          label="Password"
-          placeholder="Masukkan password"
-          error={errors.password?.message}
-          leftIcon={<Lock className="h-5 w-5" />}
-          autoComplete="current-password"
-          required
-          endAdornment={
-            <button
-              type="button"
-              onClick={() => setShowPassword(!showPassword)}
-              className="text-on-surface-variant transition-colors hover:text-primary"
-              aria-label={
-                showPassword ? "Sembunyikan password" : "Tampilkan password"
-              }
-            >
-              {showPassword ? (
-                <EyeOff className="h-5 w-5" />
-              ) : (
-                <Eye className="h-5 w-5" />
-              )}
-            </button>
-          }
-        />
+        <div className="relative">
+          <Input
+            {...register("password")}
+            type={showPassword ? "text" : "password"}
+            label="Password"
+            placeholder="Masukkan password"
+            error={errors.password?.message}
+            leftIcon={<Lock className="h-5 w-5" />}
+            autoComplete="current-password"
+            required
+          />
+          <button
+            type="button"
+            onClick={() => setShowPassword(!showPassword)}
+            className="absolute right-3 top-[38px] text-on-surface-variant hover:text-primary"
+            aria-label={
+              showPassword ? "Sembunyikan password" : "Tampilkan password"
+            }
+          >
+            {showPassword ? (
+              <EyeOff className="h-5 w-5" />
+            ) : (
+              <Eye className="h-5 w-5" />
+            )}
+          </button>
+        </div>
 
         <Button
           type="submit"

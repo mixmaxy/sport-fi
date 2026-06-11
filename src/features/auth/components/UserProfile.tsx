@@ -79,7 +79,7 @@ export const UserProfile = () => {
   return (
     <div className="max-w-xl">
       <div className="mb-8 flex items-center gap-6">
-        <div className="flex h-24 w-24 items-center justify-center rounded-full bg-primary-container text-3xl font-bold text-on-primary shadow-md">
+        <div className="flex h-24 w-24 items-center justify-center rounded-full bg-primary text-3xl font-bold text-on-primary shadow-md">
           {initials}
         </div>
         <div>

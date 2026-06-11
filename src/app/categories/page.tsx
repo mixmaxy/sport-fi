@@ -13,8 +13,8 @@ export default async function CategoriesPage() {
   const categories = await fetchCategories();
 
   return (
-    <PageShell>
-      <header className="mb-8 text-center">
+    <PageShell className="pb-16">
+      <header className="mb-12 text-center">
         <h1 className="mb-4 text-4xl font-bold tracking-tight text-on-surface">
           Sport Categories
         </h1>
@@ -23,7 +23,7 @@ export default async function CategoriesPage() {
         </p>
       </header>
 
-      <div className="grid grid-cols-2 gap-3 sm:gap-5 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
+      <div className="grid grid-cols-2 gap-5 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
         {categories.map((cat) => (
           <Link
             key={cat.id}
@@ -31,7 +31,7 @@ export default async function CategoriesPage() {
             className="group"
           >
             <div className="overflow-hidden rounded-xl border border-outline-variant bg-surface-container-lowest shadow-sm transition-shadow hover:shadow-md">
-              <div className="relative h-28 overflow-hidden bg-surface-container-low sm:h-36">
+              <div className="relative h-36 overflow-hidden bg-surface-container-low">
                 <Image
                   src={getCategoryImageUrl(cat.imageUrl)}
                   alt={cat.name}

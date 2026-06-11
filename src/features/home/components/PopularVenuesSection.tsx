@@ -16,7 +16,7 @@ export function PopularVenuesSection({
 
   return (
     <section className="bg-surface-container-lowest py-20">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-10">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="mb-12 flex flex-col justify-between gap-4 md:flex-row md:items-end">
           <div>
             <h2 className="mb-2 text-3xl font-bold tracking-tight text-on-surface">

@@ -18,7 +18,6 @@ interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
     helperText?: string;
     leftIcon?: React.ReactNode;
     rightIcon?: React.ReactNode;
-    endAdornment?: React.ReactNode;
 }
 
 export const Input = React.forwardRef<HTMLInputElement, InputProps>(
@@ -30,7 +29,6 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
             helperText,
             leftIcon,
             rightIcon,
-            endAdornment,
             id,
             required,
             ...props
@@ -70,7 +68,7 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
                             'disabled:bg-surface-container-low disabled:cursor-not-allowed disabled:text-on-surface-variant',
                             // Icon padding
                             leftIcon && 'pl-10',
-                            (rightIcon || endAdornment) && 'pr-10',
+                            rightIcon && 'pr-10',
                             // Error state
                             error
                                 ? 'border-red-300 focus:border-red-500 focus:ring-red-500'
@@ -86,14 +84,8 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
                     />
 
                     {rightIcon && (
-                        <div className="absolute right-3 top-1/2 -translate-y-1/2 text-on-surface-variant pointer-events-none">
+                        <div className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none">
                             {rightIcon}
-                        </div>
-                    )}
-
-                    {endAdornment && (
-                        <div className="absolute right-3 top-1/2 -translate-y-1/2">
-                            {endAdornment}
                         </div>
                     )}
                 </div>
@@ -113,7 +105,7 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
                 {helperText && !error && (
                     <p
                         id={`${inputId}-helper`}
-                        className="mt-1.5 text-sm text-on-surface-variant"
+                        className="mt-1.5 text-sm text-gray-500"
                     >
                         {helperText}
                     </p>

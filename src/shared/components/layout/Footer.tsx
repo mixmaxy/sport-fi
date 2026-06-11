@@ -8,10 +8,10 @@ export const Footer = () => {
       className="border-t border-outline-variant bg-surface-container-lowest"
       role="contentinfo"
     >
-      <div className="mx-auto grid max-w-7xl grid-cols-1 items-center gap-6 px-4 py-8 sm:px-6 md:grid-cols-3 lg:px-10">
+      <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-6 px-4 py-8 sm:px-6 md:h-24 md:flex-row md:gap-8 lg:px-10">
         <Link
           href="/"
-          className="justify-self-center text-lg font-extrabold tracking-tight text-on-surface transition-colors hover:text-primary md:justify-self-start"
+          className="text-lg font-extrabold tracking-tight text-on-surface transition-colors hover:text-primary"
         >
           Sport Reserve
         </Link>
@@ -40,7 +40,7 @@ export const Footer = () => {
           </a>
         </nav>
 
-        <p className="text-center text-sm text-on-surface-variant md:justify-self-end md:text-right">
+        <p className="text-center text-sm text-on-surface-variant md:text-right">
           &copy; {currentYear} Sport Reserve. All rights reserved.
         </p>
       </div>

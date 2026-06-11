@@ -110,8 +110,8 @@ export function ActivityCard({
         )}
       </Link>
 
-      <div className="flex flex-col p-5">
-        <div className="mb-2 flex flex-col gap-1 sm:flex-row sm:items-start sm:justify-between sm:gap-2">
+      <div className="flex flex-1 flex-col p-5">
+        <div className="mb-2 flex items-start justify-between gap-2">
           <Link
             href={`/activities/${activity.id}`}
             className="text-lg font-bold text-on-surface transition-colors hover:text-primary line-clamp-2"
@@ -149,7 +149,7 @@ export function ActivityCard({
           </div>
         )}
 
-        <div className="flex flex-col gap-3 border-t border-outline-variant pt-4 sm:flex-row sm:items-center sm:justify-between">
+        <div className="mt-auto flex items-center justify-between gap-3 border-t border-outline-variant pt-4">
           <div>
             <span className="text-xs text-on-surface-variant">Starts from</span>
             <div className="text-xl font-bold text-primary">
@@ -164,7 +164,7 @@ export function ActivityCard({
               </span>
             )}
           </div>
-          <div className="flex items-center gap-2 sm:justify-end">
+          <div className="flex items-center gap-2">
             <Button
               variant="outline"
               size="sm"
@@ -174,11 +174,10 @@ export function ActivityCard({
             >
               <ShoppingCart className="h-4 w-4 text-primary" />
             </Button>
-            <Link href={`/activities/${activity.id}`} className="flex-1 sm:flex-none">
+            <Link href={`/activities/${activity.id}`}>
               <Button
                 size="sm"
-                fullWidth
-                className="rounded-lg bg-primary px-6 py-3 font-bold hover:brightness-110 sm:w-auto"
+                className="rounded-lg bg-primary px-6 py-3 font-bold hover:brightness-110"
               >
                 View Detail
               </Button>

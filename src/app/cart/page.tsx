@@ -31,7 +31,10 @@ export default function CartPage() {
 
   if (items.length === 0) {
     return (
-      <PageShell narrow centered>
+      <PageShell
+        narrow
+        className="flex min-h-[60vh] flex-col items-center justify-center text-center"
+      >
         <ShoppingBag className="mb-6 h-20 w-20 text-outline-variant" />
         <h1 className="mb-3 text-2xl font-bold text-on-surface">
           Your cart is empty
@@ -47,7 +50,7 @@ export default function CartPage() {
   }
 
   return (
-    <PageShell narrow>
+    <PageShell narrow className="pb-16">
       <div className="mb-8 flex flex-wrap items-center justify-between gap-4">
         <div>
           <h1 className="text-3xl font-bold tracking-tight text-on-surface">
@@ -116,7 +119,7 @@ export default function CartPage() {
                       {activity.city?.name}, {activity.province?.name}
                     </p>
 
-                    <div className="mt-3 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                    <div className="mt-3 flex flex-wrap items-center justify-between gap-2">
                       <div>
                         {showDiscount && (
                           <span className="block text-xs text-on-surface-variant line-through">
@@ -128,7 +131,7 @@ export default function CartPage() {
                         </span>
                       </div>
 
-                      <div className="flex items-center justify-end gap-2 sm:shrink-0">
+                      <div className="flex items-center gap-2">
                         <button
                           type="button"
                           onClick={() =>
@@ -191,7 +194,7 @@ export default function CartPage() {
                     key={activity.id}
                     className="flex justify-between text-on-surface-variant"
                   >
-                    <span className="min-w-0 flex-1 truncate">
+                    <span className="max-w-[180px] truncate">
                       {activity.title} ×{quantity}
                     </span>
                     <span className="ml-2 font-medium text-on-surface">

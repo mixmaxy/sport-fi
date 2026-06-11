@@ -100,36 +100,37 @@ export const ProofPaymentUpload = ({
       {/* Drop zone / preview */}
       <div
         onClick={() => inputRef.current?.click()}
-        className="cursor-pointer rounded-xl border-2 border-dashed border-outline-variant p-4 text-center transition-colors hover:border-primary"
+        className="border-2 border-dashed border-gray-300 hover:border-blue-400 rounded-xl p-4 cursor-pointer transition-colors text-center"
       >
         {preview ? (
-          <div className="relative mx-auto h-40 w-full max-w-xs overflow-hidden rounded-lg bg-surface-container-low">
-            <Image
-              src={preview}
-              alt="Bukti pembayaran"
-              fill
-              className="object-contain"
-            />
+          <div className="relative">
+            <div className="relative h-40 mx-auto rounded-lg overflow-hidden">
+              <Image
+                src={preview}
+                alt="Bukti pembayaran"
+                fill
+                className="object-contain"
+              />
+            </div>
             <button
-              type="button"
               onClick={(e) => {
                 e.stopPropagation();
                 setPreview(null);
                 if (inputRef.current) inputRef.current.value = "";
               }}
-              className="absolute top-2 right-2 rounded-full bg-red-500 p-1 text-white shadow-sm"
+              className="absolute top-2 right-2 bg-red-500 text-white rounded-full p-1"
               aria-label="Hapus gambar"
             >
-              <X className="h-4 w-4" />
+              <X className="w-4 h-4" />
             </button>
           </div>
         ) : (
           <div className="py-4">
-            <Upload className="mx-auto mb-2 h-8 w-8 text-on-surface-variant" />
-            <p className="text-sm text-on-surface-variant">
+            <Upload className="w-8 h-8 text-gray-400 mx-auto mb-2" />
+            <p className="text-sm text-gray-600">
               Klik untuk memilih gambar bukti pembayaran
             </p>
-            <p className="mt-1 text-xs text-on-surface-variant/70">
+            <p className="text-xs text-gray-400 mt-1">
               JPG, PNG, WebP — maks 5MB
             </p>
           </div>

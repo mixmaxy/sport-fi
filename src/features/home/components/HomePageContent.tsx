@@ -62,7 +62,7 @@ export function HomePageContent({
   return (
     <div className="min-h-screen bg-background">
       {/* Hero */}
-      <section className="relative flex min-h-[calc(100vh-5rem)] items-center justify-center overflow-hidden pb-8 md:min-h-[85vh] md:pb-0">
+      <section className="relative flex min-h-[88vh] items-center justify-center overflow-hidden pb-8 pt-24 md:min-h-[85vh] md:pb-0 md:pt-0">
         <Image
           src={heroImage}
           alt="Fasilitas olahraga indoor"
@@ -87,7 +87,7 @@ export function HomePageContent({
 
       {/* Categories — compact chip strip (preview only) */}
       {categories.length > 0 && (
-        <section className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-10">
+        <section className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
           <div className="mb-5 flex flex-col justify-between gap-3 sm:flex-row sm:items-end">
             <div>
               <h2 className="text-2xl font-bold tracking-tight text-on-surface">
@@ -138,7 +138,7 @@ export function HomePageContent({
       <PopularVenuesSection activities={popularActivities} />
 
       {/* Partner CTA */}
-      <section className="relative overflow-hidden bg-inverse-surface px-4 py-24 sm:px-6 lg:px-10">
+      <section className="relative overflow-hidden bg-inverse-surface px-4 py-24 sm:px-6 lg:px-8">
         <div className="pointer-events-none absolute top-0 right-0 h-96 w-96 translate-x-1/2 -translate-y-1/2 rounded-full bg-primary/20 blur-[120px]" />
         <div className="pointer-events-none absolute bottom-0 left-0 h-64 w-64 -translate-x-1/2 translate-y-1/2 rounded-full bg-on-surface-variant/20 blur-[100px]" />
 
@@ -147,9 +147,9 @@ export function HomePageContent({
             <h2 className="mb-6 text-3xl leading-tight font-extrabold text-white md:text-5xl">
               Own a Sports Facility?
               <br />
-              <span className="text-primary-container">Partner with us today.</span>
+              <span className="text-[#adc6ff]">Partner with us today.</span>
             </h2>
-            <p className="mb-10 max-w-lg text-lg text-white/80">
+            <p className="mb-10 max-w-lg text-lg text-[#bec6e0]">
               Increase your venue&apos;s visibility, manage bookings
               effortlessly, and grow your community with Sport Reserve&apos;s
               premium management platform.
@@ -158,7 +158,7 @@ export function HomePageContent({
           </div>
 
           <div className="grid w-full grid-cols-2 gap-6 lg:w-1/2">
-            <div className="space-y-6">
+            <div className="space-y-6 translate-y-8">
               <PartnerFeatureCard
                 icon={BarChart3}
                 title="Advanced Analytics"
@@ -201,10 +201,10 @@ function PartnerFeatureCard({
   return (
     <div className="rounded-2xl border border-white/15 bg-white/10 p-6 backdrop-blur-sm transition-colors hover:border-white/25 hover:bg-white/15 sm:p-8">
       <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-primary/20">
-        <Icon className="h-6 w-6 text-primary-container" aria-hidden />
+        <Icon className="h-6 w-6 text-[#adc6ff]" aria-hidden />
       </div>
       <h4 className="mb-2 text-lg font-bold text-white">{title}</h4>
-      <p className="text-sm leading-relaxed text-white/70">{description}</p>
+      <p className="text-sm leading-relaxed text-[#c5cee0]">{description}</p>
     </div>
   );
 }

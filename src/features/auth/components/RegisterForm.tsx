@@ -134,69 +134,62 @@ export const RegisterForm = () => {
           required
         />
 
-        <Input
-          {...registerField("password")}
-          type={showPassword ? "text" : "password"}
-          label="Password"
-          placeholder="Minimal 6 karakter"
-          error={errors.password?.message}
-          leftIcon={<Lock className="w-5 h-5" />}
-          autoComplete="new-password"
-          required
-          endAdornment={
-            <button
-              type="button"
-              onClick={() => setShowPassword(!showPassword)}
-              className="text-on-surface-variant transition-colors hover:text-primary"
-              aria-label={showPassword ? "Hide password" : "Show password"}
-            >
-              {showPassword ? (
-                <EyeOff className="h-5 w-5" />
-              ) : (
-                <Eye className="h-5 w-5" />
-              )}
-            </button>
-          }
-        />
-
-        <Input
-          {...registerField("passwordRepeat")}
-          type={showPasswordRepeat ? "text" : "password"}
-          label="Konfirmasi Password"
-          placeholder="Ulangi password"
-          error={errors.passwordRepeat?.message}
-          leftIcon={<Lock className="w-5 h-5" />}
-          autoComplete="new-password"
-          required
-          endAdornment={
-            <button
-              type="button"
-              onClick={() => setShowPasswordRepeat(!showPasswordRepeat)}
-              className="text-on-surface-variant transition-colors hover:text-primary"
-              aria-label={
-                showPasswordRepeat ? "Hide password" : "Show password"
-              }
-            >
-              {showPasswordRepeat ? (
-                <EyeOff className="h-5 w-5" />
-              ) : (
-                <Eye className="h-5 w-5" />
-              )}
-            </button>
-          }
-        />
-
-        <div className="flex items-start gap-3">
-          <input
-            type="checkbox"
-            id="terms"
-            className="mt-0.5 h-4 w-4 shrink-0 rounded border-outline-variant text-primary focus:ring-primary"
+        {/* Password Input */}
+        <div className="relative">
+          <Input
+            {...registerField("password")}
+            type={showPassword ? "text" : "password"}
+            label="Password"
+            placeholder="Minimal 6 karakter"
+            error={errors.password?.message}
+            leftIcon={<Lock className="w-5 h-5" />}
+            autoComplete="new-password"
             required
           />
-          <label
-            htmlFor="terms"
-            className="text-sm leading-snug text-on-surface-variant"
+          <button
+            type="button"
+            onClick={() => setShowPassword(!showPassword)}
+            className="absolute right-3 top-[38px] text-on-surface-variant hover:text-primary"
+            aria-label={showPassword ? "Hide password" : "Show password"}
           >
+            {showPassword ? (
+              <EyeOff className="w-5 h-5" />
+            ) : (
+              <Eye className="w-5 h-5" />
+            )}
+          </button>
+        </div>
+
+        {/* Password Confirmation Input */}
+        <div className="relative">
+          <Input
+            {...registerField("passwordRepeat")}
+            type={showPasswordRepeat ? "text" : "password"}
+            label="Konfirmasi Password"
+            placeholder="Ulangi password"
+            error={errors.passwordRepeat?.message}
+            leftIcon={<Lock className="w-5 h-5" />}
+            autoComplete="new-password"
+            required
+          />
+          <button
+            type="button"
+            onClick={() => setShowPasswordRepeat(!showPasswordRepeat)}
+            className="absolute right-3 top-[38px] text-on-surface-variant hover:text-primary"
+            aria-label={showPasswordRepeat ? "Hide password" : "Show password"}
+          >
+            {showPasswordRepeat ? (
+              <EyeOff className="w-5 h-5" />
+            ) : (
+              <Eye className="w-5 h-5" />
+            )}
+          </button>
+        </div>
+
+        {/* Terms Agreement */}
+        <div className="flex items-start gap-2">
+          <input type="checkbox" id="terms" className="mt-1" required />
+          <label htmlFor="terms" className="text-sm text-on-surface-variant">
             Saya setuju dengan Syarat & Ketentuan serta Kebijakan Privasi Sport
             Reserve.
           </label>
