@@ -150,9 +150,9 @@ export function HomePageContent({
               <span className="text-[#adc6ff]">Partner with us today.</span>
             </h2>
             <p className="mb-10 max-w-lg text-lg text-[#bec6e0]">
-              Increase your venue&apos;s visibility, manage bookings effortlessly,
-              and grow your community with Sport Reserve&apos;s premium management
-              platform.
+              Increase your venue&apos;s visibility, manage bookings
+              effortlessly, and grow your community with Sport Reserve&apos;s
+              premium management platform.
             </p>
             <PartnerCtaButtons />
           </div>

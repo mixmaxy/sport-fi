@@ -9,7 +9,9 @@ interface PopularVenuesSectionProps {
   activities: SportActivity[];
 }
 
-export function PopularVenuesSection({ activities }: PopularVenuesSectionProps) {
+export function PopularVenuesSection({
+  activities,
+}: PopularVenuesSectionProps) {
   if (activities.length === 0) return null;
 
   return (
