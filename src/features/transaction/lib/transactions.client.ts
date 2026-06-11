@@ -1,4 +1,8 @@
-import { clientGet, clientPost } from "@/shared/config/api";
+import { api, clientGet, clientPost } from "@/shared/config/api";
+import { unwrapPaginatedResult } from "@/shared/config/api-envelope";
+import {
+  normalizeTransaction,
+} from "@/features/transaction/lib/transactions.mapper";
 import type {
   CreateTransactionRequest,
   PaginatedResponse,
@@ -11,71 +15,108 @@ export async function createTransaction(
   transactionData: CreateTransactionRequest,
 ): Promise<Transaction> {
   const first = transactionData.transactionItems[0];
-  return clientPost<Transaction>("/transaction/create", {
-    sport_activity_id: first?.sportActivityId,
-    payment_method_id: transactionData.paymentMethodId,
+  const sportActivityId = Number(first?.sportActivityId);
+  const paymentMethodId = Number(transactionData.paymentMethodId);
+
+  if (!sportActivityId || Number.isNaN(sportActivityId)) {
+    throw new Error(
+      "Aktivitas tidak valid. Kosongkan keranjang dan pilih venue ulang.",
+    );
+  }
+  if (!paymentMethodId || Number.isNaN(paymentMethodId)) {
+    throw new Error("Metode pembayaran tidak valid.");
+  }
+
+  const raw = await clientPost<unknown>("/transaction/create", {
+    sport_activity_id: sportActivityId,
+    payment_method_id: paymentMethodId,
   });
+  return normalizeTransaction(raw as Record<string, unknown>);
 }
 
-export async function getMyTransactions(params?: {
-  search?: string;
-  page?: number;
-  perPage?: number;
-  isPaginate?: boolean;
-}): Promise<Transaction[]> {
-  return clientGet<Transaction[]>("/my-transaction", {
-    params: {
-      is_paginate: params?.isPaginate ?? false,
-      per_page: params?.perPage ?? 5,
-      page: params?.page ?? 1,
-      search: params?.search,
-    },
-  });
+export async function getMyTransactions(): Promise<Transaction[]> {
+  const { data: body } = await api.get("/my-transaction");
+  const page = unwrapPaginatedResult<Record<string, unknown>>(body);
+  return page.data.map((item) => normalizeTransaction(item));
 }
 
 export async function getTransactionById(
   transactionId: string,
 ): Promise<Transaction> {
-  return clientGet<Transaction>(`/transaction/${transactionId}`);
+  const raw = await clientGet<unknown>(`/transaction/${transactionId}`);
+  return normalizeTransaction(raw as Record<string, unknown>);
 }
 
 export async function getAllTransactionsPage(params?: {
   search?: string;
   page?: number;
   perPage?: number;
+  status?: string;
+  isPaginate?: boolean;
 }): Promise<PaginatedResponse<Transaction>> {
-  return clientGet<PaginatedResponse<Transaction>>("/all-transaction", {
+  const { data: body } = await api.get("/all-transaction", {
     params: {
-      is_paginate: true,
+      is_paginate: params?.isPaginate ?? true,
       per_page: params?.perPage ?? 5,
       page: params?.page ?? 1,
-      search: params?.search,
+      search: params?.search || undefined,
+      status: params?.status || undefined,
     },
   });
+  const page = unwrapPaginatedResult<Record<string, unknown>>(body);
+  return {
+    ...page,
+    data: page.data.map((item) => normalizeTransaction(item)),
+  };
 }
 
 export async function updateProofPayment(
   payload: UpdateProofPaymentRequest,
-): Promise<Transaction> {
+): Promise<void> {
   const { transactionId, proofPaymentUrl } = payload;
-  return clientPost<Transaction>(
+  const { data: body } = await api.post(
     `/transaction/update-proof-payment/${transactionId}`,
-    { proofPaymentUrl },
+    { proof_payment_url: proofPaymentUrl },
   );
+
+  if (
+    body &&
+    typeof body === "object" &&
+    "error" in body &&
+    (body as { error?: boolean }).error
+  ) {
+    throw new Error(
+      String((body as { message?: string }).message ?? "Update proof gagal"),
+    );
+  }
 }
 
 export async function cancelTransaction(
   transactionId: string,
 ): Promise<Transaction> {
-  return clientPost<Transaction>(`/transaction/cancel/${transactionId}`);
+  const raw = await clientPost<unknown>(
+    `/transaction/cancel/${transactionId}`,
+  );
+  return normalizeTransaction(raw as Record<string, unknown>);
 }
 
 export async function updateTransactionStatus(
   payload: UpdateStatus,
-): Promise<Transaction> {
+): Promise<void> {
   const { transactionId, status } = payload;
-  return clientPost<Transaction>(
+  const { data: body } = await api.post(
     `/transaction/update-status/${transactionId}`,
     { status },
   );
+
+  if (
+    body &&
+    typeof body === "object" &&
+    "error" in body &&
+    (body as { error?: boolean }).error
+  ) {
+    throw new Error(
+      String((body as { message?: string }).message ?? "Update status gagal"),
+    );
+  }
 }

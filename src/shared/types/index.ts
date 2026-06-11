@@ -18,7 +18,6 @@ export interface User {
   name: string;
   email: string;
   phoneNumber: string;
-  profilePictureUrl: string | null;
   role: "user" | "admin";
   createdAt: string;
   updatedAt: string;
@@ -42,7 +41,6 @@ export interface RegisterRequest {
   password: string;
   passwordRepeat: string;
   phoneNumber: string;
-  profilePictureUrl?: string;
   role?: "user" | "admin";
 }
 
@@ -50,7 +48,6 @@ export interface UpdateUserRequest {
   name?: string;
   email?: string;
   phoneNumber?: string;
-  profilePictureUrl?: string;
   role?: "user" | "admin";
 }
 

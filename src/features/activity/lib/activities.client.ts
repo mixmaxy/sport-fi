@@ -1,5 +1,9 @@
 import { api, clientDelete, clientGet, clientPost } from "@/shared/config/api";
 import { unwrapPaginatedResult } from "@/shared/config/api-envelope";
+import {
+  normalizeSportActivity,
+  normalizeSportActivities,
+} from "@/features/activity/lib/activities.mapper";
 import type {
   CreateActivityRequest,
   PaginatedResponse,
@@ -14,15 +18,19 @@ export function normalizeActivitiesPage(
 ): PaginatedResponse<SportActivity> | undefined {
   if (raw == null) return undefined;
   if (Array.isArray(raw)) {
+    const data = normalizeSportActivities(raw);
     return {
-      data: raw,
+      data,
       current_page: 1,
       last_page: 1,
-      per_page: raw.length,
-      total: raw.length,
+      per_page: data.length,
+      total: data.length,
     };
   }
-  return raw;
+  return {
+    ...raw,
+    data: normalizeSportActivities(raw.data),
+  };
 }
 
 export async function getActivitiesPage(
@@ -37,11 +45,21 @@ export async function getActivitiesPage(
     city_id: params?.cityId,
   };
   const { data: body } = await api.get("/sport-activities", { params: query });
-  return unwrapPaginatedResult<SportActivity>(body);
+  const page = unwrapPaginatedResult<Record<string, unknown>>(body);
+  const data = normalizeSportActivities(page.data);
+  return {
+    ...page,
+    data,
+  };
 }
 
 export async function getActivityById(id: string): Promise<SportActivity> {
-  return clientGet<SportActivity>(`/sport-activities/${id}`);
+  const raw = await clientGet<Record<string, unknown>>(`/sport-activities/${id}`);
+  const activity = normalizeSportActivity(raw);
+  if (!activity) {
+    throw new Error("Aktivitas tidak ditemukan.");
+  }
+  return activity;
 }
 
 export async function createActivity(

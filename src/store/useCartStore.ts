@@ -1,7 +1,24 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import type { CartItem, SportActivity } from '@/shared/types';
+import { normalizeSportActivity } from '@/features/activity/lib/activities.mapper';
 import { getActivityFinalPrice } from '@/shared/utils/helper';
+
+function normalizeCartItem(item: CartItem): CartItem | null {
+    const activity = normalizeSportActivity(item.activity);
+    if (!activity) return null;
+    return {
+        ...item,
+        activity,
+        quantity: Math.max(1, item.quantity),
+    };
+}
+
+function normalizeCartItems(items: CartItem[]): CartItem[] {
+    return items
+        .map(normalizeCartItem)
+        .filter((item): item is CartItem => item != null);
+}
 
 interface CartState {
     // State
@@ -29,24 +46,26 @@ export const useCartStore = create<CartState>()(
 
             // Add item to cart or increase quantity if already exists
             addItem: (activity, quantity = 1) => {
+                const normalizedActivity = normalizeSportActivity(activity);
+                if (!normalizedActivity) return;
+
                 const { items } = get();
-                const existingItem = items.find(item => item.activity.id === activity.id);
+                const existingItem = items.find(
+                    item => item.activity.id === normalizedActivity.id,
+                );
 
                 if (existingItem) {
-                    // Item already in cart, increase quantity
                     set({
                         items: items.map(item =>
-                            item.activity.id === activity.id
-                                ? { ...item, quantity: item.quantity + quantity }
+                            item.activity.id === normalizedActivity.id
+                                ? { ...item, activity: normalizedActivity, quantity: item.quantity + quantity }
                                 : item
                         ),
                     });
                 } else {
-                    // New item, add to cart
-                    set({ items: [...items, { activity, quantity }] });
+                    set({ items: [...items, { activity: normalizedActivity, quantity }] });
                 }
 
-                // Update computed values
                 updateComputedValues(get);
             },
 
@@ -87,14 +106,15 @@ export const useCartStore = create<CartState>()(
             },
         }),
         {
-            name: 'cart-storage', // localStorage key
+            name: 'cart-storage-v2', // localStorage key
             partialize: (state) => ({
                 items: state.items,
             }),
             merge: (persisted, current) => {
-                const items =
+                const items = normalizeCartItems(
                     (persisted as Partial<CartState> | undefined)?.items ??
-                    current.items;
+                    current.items,
+                );
                 return {
                     ...current,
                     items,

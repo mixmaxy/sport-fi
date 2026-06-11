@@ -12,8 +12,12 @@ function normalizeCategory(raw: Record<string, unknown>): SportCategory {
 }
 
 export async function fetchCategories(): Promise<SportCategory[]> {
-  const raw = await serverFetch<Record<string, unknown>[]>("/sport-categories", {
-    tags: ["categories"],
-  });
+  const raw = await serverFetch<Record<string, unknown>[]>(
+    "/sport-categories",
+    {
+      params: { is_paginate: "false" },
+      tags: ["categories"],
+    },
+  );
   return raw.map(normalizeCategory).filter((c) => c.id && c.name);
 }
