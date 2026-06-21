@@ -43,7 +43,11 @@ function AuthSessionSync() {
         if (!cancelled) updateUser(me);
       })
       .catch(() => {
-        if (!cancelled) logout();
+        if (cancelled) return;
+        recoverUserFromLegacyStorage();
+        if (!useAuthStore.getState().user) {
+          logout();
+        }
       });
 
     return () => {

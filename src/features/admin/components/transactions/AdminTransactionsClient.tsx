@@ -33,7 +33,7 @@ const admin_transaction_tab_icons: Record<
 };
 
 export function AdminTransactionsClient() {
-  const { isAuthenticated, isAdmin } = useAdminGuard({
+  const { isAuthenticated, isAdmin, isLoading: isAuthLoading } = useAdminGuard({
     redirectPath: "/admin/transactions",
     loginRedirect: "/login",
   });
@@ -57,8 +57,17 @@ export function AdminTransactionsClient() {
     handleStatusChange,
     setPage,
   } = useAdminTransactions({
-    enabled: isAuthenticated && isAdmin,
+    enabled: isAuthenticated && isAdmin && !isAuthLoading,
   });
+
+  if (isAuthLoading) {
+    return (
+      <PageShell narrow centered contentClassName="gap-3">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+        <p className="text-sm text-on-surface-variant">Memuat panel admin…</p>
+      </PageShell>
+    );
+  }
 
   if (!isAuthenticated || !isAdmin) {
     return (
