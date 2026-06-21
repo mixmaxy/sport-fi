@@ -1,8 +1,6 @@
 import { api, clientGet, clientPost } from "@/shared/config/api";
 import { unwrapPaginatedResult } from "@/shared/config/api-envelope";
-import {
-  normalizeTransaction,
-} from "@/features/transaction/lib/transactions.mapper";
+import { normalizeTransaction } from "@/features/transaction/lib/transactions.mapper";
 import type {
   CreateTransactionRequest,
   PaginatedResponse,
@@ -35,9 +33,15 @@ export async function createTransaction(
 }
 
 export async function getMyTransactions(): Promise<Transaction[]> {
-  const { data: body } = await api.get("/my-transaction");
+  const { data: body } = await api.get("/my-transaction", {
+    params: { per_page: 100, page: 1 },
+  });
   const page = unwrapPaginatedResult<Record<string, unknown>>(body);
-  return page.data.map((item) => normalizeTransaction(item));
+  const transactions = page.data.map((item) => normalizeTransaction(item));
+
+  return transactions.sort(
+    (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+  );
 }
 
 export async function getTransactionById(
@@ -94,10 +98,20 @@ export async function updateProofPayment(
 export async function cancelTransaction(
   transactionId: string,
 ): Promise<Transaction> {
-  const raw = await clientPost<unknown>(
-    `/transaction/cancel/${transactionId}`,
-  );
-  return normalizeTransaction(raw as Record<string, unknown>);
+  const { data: body } = await api.post(`/transaction/cancel/${transactionId}`);
+
+  if (
+    body &&
+    typeof body === "object" &&
+    "error" in body &&
+    (body as { error?: boolean }).error
+  ) {
+    throw new Error(
+      String((body as { message?: string }).message ?? "Cancel gagal"),
+    );
+  }
+
+  return getTransactionById(transactionId);
 }
 
 export async function updateTransactionStatus(
