@@ -265,6 +265,9 @@ export const TransactionList = () => {
                               alt={tx.paymentMethod.name}
                               fill
                               className="object-contain"
+                              unoptimized={skipImageOptimization(
+                                tx.paymentMethod.imageUrl,
+                              )}
                             />
                           </div>
                         )}

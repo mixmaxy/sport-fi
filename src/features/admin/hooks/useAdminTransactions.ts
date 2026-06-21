@@ -4,9 +4,7 @@ import { useMemo, useState } from "react";
 import { useAllTransactions } from "@/shared/config/client-fetch";
 import { useMutationWithInvalidation } from "@/shared/hooks/useMutationWithInvalidation";
 import { updateTransactionStatus } from "@/features/transaction/lib/transactions.client";
-import {
-  admin_transactions_per_page,
-} from "@/features/admin/constants";
+import { admin_transactions_per_page } from "@/features/admin/constants";
 import type { AdminTransactionStatusTab } from "@/features/admin/components/transactions/transactionConstants";
 import { formatCurrency } from "@/shared/utils/helper";
 import { getErrorMessage } from "@/shared/config/api";
@@ -28,17 +26,17 @@ export function useAdminTransactions({ enabled }: UseAdminTransactionsOptions) {
     [search],
   );
 
-  const { data: txPage, isLoading, isError, refetch } = useAllTransactions(
-    params,
-    enabled,
-  );
+  const {
+    data: txPage,
+    isLoading,
+    isError,
+    refetch,
+  } = useAllTransactions(params, enabled);
 
   const isInitialLoading = isLoading && !txPage;
 
-  const { mutate: setStatus, isPending: updating } = useMutationWithInvalidation(
-    updateTransactionStatus,
-    () => refetch(),
-  );
+  const { mutate: setStatus, isPending: updating } =
+    useMutationWithInvalidation(updateTransactionStatus, () => refetch());
 
   const allRows = useMemo(() => txPage?.data ?? [], [txPage?.data]);
 
