@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { Loader2 } from "lucide-react";
 import { AdminAccessDenied } from "@/features/admin/components/AdminAccessDenied";
 import { ActivitiesManagement } from "@/features/admin/components/ActivitiesManagement";
 import { CategoriesManagement } from "@/features/admin/components/CategoriesManagement";
@@ -12,8 +13,17 @@ import { PageShell } from "@/shared/components/layout/PageShell";
 type AdminTab = "categories" | "activities";
 
 export function AdminDashboardClient() {
-  const { user, isAdmin } = useAdminGuard();
+  const { user, isAdmin, isLoading } = useAdminGuard();
   const [activeTab, setActiveTab] = useState<AdminTab>("categories");
+
+  if (isLoading) {
+    return (
+      <PageShell narrow centered contentClassName="gap-3">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+        <p className="text-sm text-on-surface-variant">Memuat panel admin…</p>
+      </PageShell>
+    );
+  }
 
   if (!user || !isAdmin) {
     return <AdminAccessDenied />;

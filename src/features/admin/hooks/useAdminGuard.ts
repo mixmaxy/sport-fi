@@ -3,6 +3,7 @@
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
+import { useRestoreAuthSession } from "@/features/auth/hooks/useRestoreAuthSession";
 import { useAuthStore } from "@/store/useAuthStore";
 
 interface UseAdminGuardOptions {
@@ -15,20 +16,36 @@ export function useAdminGuard({
   loginRedirect,
 }: UseAdminGuardOptions = {}) {
   const router = useRouter();
-  const { user, isAuthenticated } = useAuthStore();
+  const { user, isAuthenticated, hasHydrated } = useAuthStore();
+  const { isRestoring, isReady } = useRestoreAuthSession({
+    redirectToLogin: false,
+  });
   const isAdmin = user?.role === "admin";
+  const isLoading =
+    !hasHydrated || isRestoring || (isAuthenticated && !user);
 
   useEffect(() => {
+    if (!isReady || isRestoring) return;
+
     if (!isAuthenticated) {
       const loginUrl = loginRedirect ?? `/login?redirect=${redirectPath}`;
-      router.push(loginUrl);
+      router.replace(loginUrl);
       return;
     }
+
     if (user && user.role !== "admin") {
       toast.error("Akses ditolak. Halaman ini hanya untuk Administrator.");
-      router.push("/");
+      router.replace("/");
     }
-  }, [user, isAuthenticated, router, redirectPath, loginRedirect]);
+  }, [
+    user,
+    isAuthenticated,
+    isReady,
+    isRestoring,
+    router,
+    redirectPath,
+    loginRedirect,
+  ]);
 
-  return { user, isAuthenticated, isAdmin };
+  return { user, isAuthenticated, isAdmin, isLoading };
 }

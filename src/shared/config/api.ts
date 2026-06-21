@@ -45,7 +45,11 @@ api.interceptors.response.use(
     (error: AxiosError) => {
         if (error.response?.status === 401) {
             if (typeof window !== "undefined") {
-                useAuthStore.getState().logout();
+                const { hasHydrated, logout } = useAuthStore.getState();
+                if (!hasHydrated) {
+                    return Promise.reject(error);
+                }
+                logout();
                 if (!window.location.pathname.includes('/login')) {
                     window.location.href = '/login';
                 }
