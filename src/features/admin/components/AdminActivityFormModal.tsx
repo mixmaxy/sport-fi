@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import Image from "next/image";
-import { Upload, MapPin, DollarSign, X } from "lucide-react";
+import { Upload, MapPin, X } from "lucide-react";
 import {
   useCreateActivity,
   useUpdateActivity,
@@ -239,7 +239,9 @@ export function AdminActivityFormModal({
               onChange={(e) => setPrice(e.target.value)}
               placeholder="Contoh: 100000"
               required
-              leftIcon={<DollarSign className="h-4 w-4 text-on-surface-variant" />}
+              leftIcon={
+                <span className="text-xs font-bold text-on-surface-variant">Rp</span>
+              }
             />
             <Input
               label="Harga Diskon (Rp, Opsional)"
@@ -247,7 +249,9 @@ export function AdminActivityFormModal({
               value={priceDiscount}
               onChange={(e) => setPriceDiscount(e.target.value)}
               placeholder="Contoh: 85000"
-              leftIcon={<DollarSign className="h-4 w-4 text-on-surface-variant" />}
+              leftIcon={
+                <span className="text-xs font-bold text-on-surface-variant">Rp</span>
+              }
             />
           </div>
 
