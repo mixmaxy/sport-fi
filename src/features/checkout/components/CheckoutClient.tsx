@@ -17,6 +17,7 @@ import {
 } from "@/shared/utils/helper";
 import { cn } from "@/shared/utils/cn";
 import { toast } from "sonner";
+import { skipImageOptimization } from "@/shared/utils/images";
 import type { PaymentMethod } from "@/shared/types";
 
 interface CheckoutClientProps {
@@ -158,6 +159,7 @@ export function CheckoutClient({ paymentMethods }: CheckoutClientProps) {
                       alt={method.name}
                       fill
                       className="object-contain"
+                      unoptimized={skipImageOptimization(method.imageUrl)}
                     />
                   </div>
                   <span className="font-semibold text-on-surface">

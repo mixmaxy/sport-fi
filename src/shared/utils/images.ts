@@ -71,9 +71,18 @@ function isAllowedRemoteImageHost(hostname: string): boolean {
   );
 }
 
+function isSvgImageUrl(url: string): boolean {
+  try {
+    return new URL(url).pathname.toLowerCase().endsWith(".svg");
+  } catch {
+    return url.toLowerCase().includes(".svg");
+  }
+}
+
 /** True when Next.js Image should use unoptimized (placeholder, blob, or unknown host). */
 export function skipImageOptimization(url: string): boolean {
   if (isLocalPlaceholderImage(url)) return true;
+  if (isSvgImageUrl(url)) return true;
   if (url.startsWith("data:") || url.startsWith("blob:")) return true;
 
   try {

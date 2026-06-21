@@ -1,9 +1,9 @@
 import type {
-  PaymentMethod,
   Transaction,
   TransactionStatus,
 } from "@/shared/types";
 import { normalizeSportActivity } from "@/features/activity/lib/activities.mapper";
+import { normalizePaymentMethod } from "@/features/payment/lib/payment.mapper";
 
 type RawRecord = Record<string, unknown>;
 
@@ -44,18 +44,6 @@ function extractTransactionRecords(raw: unknown): RawRecord[] {
   }
 
   return [];
-}
-
-function normalizePaymentMethod(raw: RawRecord): PaymentMethod {
-  return {
-    id: String(raw.id ?? raw.payment_method_id ?? ""),
-    name: String(raw.name ?? raw.payment_method_name ?? ""),
-    imageUrl: String(raw.image_url ?? raw.imageUrl ?? ""),
-    accountNumber: String(raw.account_number ?? raw.accountNumber ?? ""),
-    accountName: String(raw.account_name ?? raw.accountName ?? ""),
-    createdAt: String(raw.created_at ?? raw.createdAt ?? ""),
-    updatedAt: String(raw.updated_at ?? raw.updatedAt ?? ""),
-  };
 }
 
 function normalizeTransactionItem(raw: RawRecord) {
