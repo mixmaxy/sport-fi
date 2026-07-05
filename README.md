@@ -235,3 +235,12 @@ Cek role setelah login: Dashboard → Settings, navbar (link Admin), atau DevToo
 4. **Hydration auth**: dashboard & checkout menunggu Zustand persist + session restore agar tidak blank setelah redirect.
 5. **Admin transaksi**: tab status (`pending`, `success`, `cancelled`), search, approve (`success`) / reject (`failed`).
 6. **Gambar eksternal**: helper `ExternalImage` + `skipImageOptimization` untuk URL dari API upload.
+
+---
+
+## Credential for Testing
+
+| Role | Email | Password |
+|------|------------------|--------|
+| `admin` | syukran@gmail.com | syukran123 |
+| `user` | user.testing@gmail.com | user12345 |
